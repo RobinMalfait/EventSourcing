@@ -1,0 +1,43 @@
+{
+    "name": "RobinMalfait/EventSourcing",
+    "description": "An EventSourcing Package",
+    "keywords": [
+        "EventSourcing",
+        "CQRS"
+    ],
+    "homepage": "https://github.com/robinmalfait/EventSourcing",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Robin Malfait",
+            "email": "malfait.robin@gmail.com",
+            "homepage": "http://robinmalfait.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php" : ">=5.5.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit" : "4.*",
+        "scrutinizer/ocular": "~1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "EventSourcing\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "EventSourcing\\Test\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}
