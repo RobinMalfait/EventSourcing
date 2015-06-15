@@ -26,7 +26,7 @@ trait Replayer
         return $this;
     }
 
-    public function getHead()
+    public function getPlayhead()
     {
         return $this->playhead;
     }

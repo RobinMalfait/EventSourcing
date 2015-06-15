@@ -21,7 +21,7 @@ class ReplayerTest extends TestCase
      */
     public function the_playhead_should_be_negative_at_default()
     {
-        $this->assertEquals(-1, $this->aggregate->getHead());
+        $this->assertEquals(-1, $this->aggregate->getPlayhead());
         $this->assertFalse($this->aggregate->isCalled());
     }
 
