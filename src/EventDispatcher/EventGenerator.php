@@ -1,8 +1,10 @@
 <?php namespace EventSourcing\EventDispatcher;
 
+use EventSourcing\Domain\DomainEvent;
+
 trait EventGenerator
 {
-    private $recordedEvents;
+    private $recordedEvents = [];
 
     public function releaseEvents()
     {
