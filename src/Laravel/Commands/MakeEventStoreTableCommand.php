@@ -2,14 +2,14 @@
 
 use Illuminate\Console\Command;
 
-class MakeEventStoreTableCommand extends Command
-{
+class MakeEventStoreTableCommand extends Command {
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'EventSourcing:table';
+    protected $signature = 'event-sourcing:table';
 
     /**
      * The console command description.
