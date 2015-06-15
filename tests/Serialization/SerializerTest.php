@@ -44,8 +44,8 @@ class SerializerStub
     use Serializer;
 }
 
-class SerializerClass {
-
+class SerializerClass
+{
     private $id = 12; // Primitives
 
     private $name; // Other Classes
@@ -62,7 +62,7 @@ class SerializerName
 
     private $lastname;
 
-    function __construct($firstname, $lastname)
+    public function __construct($firstname, $lastname)
     {
         $this->firstname = $firstname;
         $this->lastname = $lastname;

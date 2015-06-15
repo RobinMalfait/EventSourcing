@@ -1,4 +1,4 @@
-<?php namespace EventSourcing\Serialization; 
+<?php namespace EventSourcing\Serialization;
 
 use ReflectionClass;
 

@@ -44,8 +44,8 @@ class DeserializerStub
     use Deserializer;
 }
 
-class DeserializerClass {
-
+class DeserializerClass
+{
     private $id = 12; // Primitives
 
     private $name; // Other Classes
@@ -62,7 +62,7 @@ class DeserializerName
 
     private $lastname;
 
-    function __construct($firstname, $lastname)
+    public function __construct($firstname, $lastname)
     {
         $this->firstname = $firstname;
         $this->lastname = $lastname;

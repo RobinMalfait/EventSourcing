@@ -1,4 +1,4 @@
-<?php namespace EventSourcing\Test\Serialization; 
+<?php namespace EventSourcing\Test\Serialization;
 
 use EventSourcing\Serialization\Deserializer;
 use EventSourcing\Serialization\Serializer;
@@ -39,7 +39,8 @@ class SerializationExampleClass
     }
 }
 
-class D {
+class D
+{
     private $id = 321;
 
     private $recursive;

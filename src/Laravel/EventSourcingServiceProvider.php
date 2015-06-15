@@ -5,7 +5,6 @@ use Illuminate\Support\ServiceProvider;
 
 class EventSourcingServiceProvider extends ServiceProvider
 {
-
     /**
      * Register the service provider.
      *

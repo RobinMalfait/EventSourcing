@@ -2,8 +2,8 @@
 
 use Illuminate\Console\Command;
 
-class MakeEventStoreTableCommand extends Command {
-
+class MakeEventStoreTableCommand extends Command
+{
     /**
      * The name and signature of the console command.
      *
