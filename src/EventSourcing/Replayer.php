@@ -5,6 +5,8 @@ use ReflectionClass;
 
 trait Replayer
 {
+    private $playhead = -1;
+
     public static function replayEvents($events)
     {
         return array_reduce($events, function ($me, $event) {
@@ -22,5 +24,10 @@ trait Replayer
         $this->playhead++;
 
         return $this;
+    }
+
+    public function getHead()
+    {
+        return $this->playhead;
     }
 }

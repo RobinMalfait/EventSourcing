@@ -6,6 +6,4 @@ use EventSourcing\EventSourcing\Replayer;
 abstract class AggregateRoot
 {
     use EventGenerator, Replayer;
-
-    public $playhead = -1;
 }
