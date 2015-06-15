@@ -32,7 +32,7 @@ class ReplayerTest extends TestCase
     {
         $aggregate = ReplayerStub::replayEvents($this->events);
 
-        $this->assertEquals(0, $aggregate->playhead);
+        $this->assertEquals(0, $aggregate->getPlayhead());
         $this->assertTrue($aggregate->isCalled());
     }
 }
