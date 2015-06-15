@@ -1,22 +1,27 @@
 <?php namespace EventSourcing\Laravel\Commands;
 
-use Illuminate\Console\Command;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\Builder;
 
-class MakeEventStoreTableCommand extends Command {
+class MakeEventStoreTableCommand extends EventSourcingCommand
+{
+
+    private $database;
+
+    function __construct(Builder $database)
+    {
+        $this->database = $database;
+    }
+
 
     /**
-     * The name and signature of the console command.
      *
-     * @var string
      */
-    protected $signature = 'event-sourcing:table';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Make the EventStore table.';
+    public function setup()
+    {
+        $this->setCommandName('table');
+        $this->setCommandDescription('Make the EventStore table.');
+    }
 
     /**
      * Execute the console command.
@@ -25,6 +30,17 @@ class MakeEventStoreTableCommand extends Command {
      */
     public function handle()
     {
-        var_dump("TEHEEE");
+        $this->database->create('eventstore', function(Blueprint $table)
+        {
+            $table->string('uuid', 50)->index();
+
+            $table->integer('playhead')->unsigned();
+            $table->text('metadata');
+            $table->text('payload');
+            $table->dateTime('recorded_on');
+
+            $table->unique(['uuid', 'playhead']);
+        });
     }
+
 }
