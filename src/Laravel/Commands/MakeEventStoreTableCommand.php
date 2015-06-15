@@ -1,8 +1,9 @@
 <?php namespace EventSourcing\Laravel\Commands;
 
+use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
 
-class MakeEventStoreTableCommand extends EventSourcingCommand
+class MakeEventStoreTableCommand extends Command
 {
     protected $signature = "event-sourcing:table";
 
