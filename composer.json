@@ -3,7 +3,8 @@
     "description": "An EventSourcing Package",
     "keywords": [
         "EventSourcing",
-        "CQRS"
+        "CQRS",
+        "Laravel"
     ],
     "homepage": "https://github.com/robinmalfait/EventSourcing",
     "license": "MIT",

@@ -1,12 +1,14 @@
 <?php namespace EventSourcing\Laravel;
 
+use EventSourcing\Laravel\Commands\MakeAggregateCommand;
 use EventSourcing\Laravel\Commands\MakeEventStoreTableCommand;
 use Illuminate\Support\ServiceProvider;
 
 class EventSourcingServiceProvider extends ServiceProvider
 {
     protected $commands = [
-        'MakeEventStoreTable'
+        'MakeEventStoreTable',
+        'MakeAggregate'
     ];
     /**
      * Register the service provider.
@@ -18,7 +20,8 @@ class EventSourcingServiceProvider extends ServiceProvider
         $this->registerArtisanCommands();
 
         $this->commands(
-            'command.event-sourcing.table.create'
+            'command.event-sourcing.table.create',
+            'command.event-sourcing.make.aggregate'
         );
     }
 
@@ -27,6 +30,13 @@ class EventSourcingServiceProvider extends ServiceProvider
         foreach ($this->commands as $command) {
             $this->{"register{$command}Command"}();
         }
+    }
+
+    public function registerMakeAggregateCommand()
+    {
+        $this->app->singleton('command.event-sourcing.make.aggregate', function () {
+            return new MakeAggregateCommand($this->app);
+        });
     }
 
     public function registerMakeEventStoreTableCommand()
@@ -39,7 +49,8 @@ class EventSourcingServiceProvider extends ServiceProvider
     public function provides()
     {
         return [
-            'command.event-sourcing.table.create'
+            'command.event-sourcing.table.create',
+            'command.event-sourcing.make.aggregate',
         ];
     }
 }

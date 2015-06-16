@@ -1,0 +1,24 @@
+<?php namespace $NAMESPACE$;
+
+use EventSourcing\EventStore\EventStoreRepository;
+
+final class $AGGREGATE$Repository
+{
+    private $repository;
+
+    public function __construct(EventStoreRepository $repository)
+    {
+        $this->repository = $repository;
+        $this->repository->setAggregateClass($AGGREGATE$::class);
+    }
+
+    public function load($id)
+    {
+        return $this->repository->load($id);
+    }
+
+    public function save($aggregateRoot)
+    {
+        $this->repository->save($aggregateRoot);
+    }
+}
