@@ -2,9 +2,16 @@
 
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\Builder;
 
 class MakeEventStoreTableCommand extends Command
 {
+    /**
+     * The Schema Builder
+     * @var
+     */
+    private $schema;
+
     /**
      * The name and signature of the console command.
      *
@@ -19,6 +26,11 @@ class MakeEventStoreTableCommand extends Command
      */
     protected $description = 'Make the EventStore table.';
 
+    function __construct(Builder $builder)
+    {
+        $this->schema = $builder->connection('eventstore')->getSchemaBuilder();
+    }
+
     /**
      * Execute the console command.
      *
@@ -26,7 +38,7 @@ class MakeEventStoreTableCommand extends Command
      */
     public function handle()
     {
-        $this->database->connection('eventstore')->create('eventstore', function(Blueprint $table)
+        $this->schema->create('eventstore', function(Blueprint $table)
         {
             $table->string('uuid', 50);
 
