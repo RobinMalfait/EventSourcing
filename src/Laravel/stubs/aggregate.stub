@@ -4,11 +4,4 @@ use EventSourcing\Domain\AggregateRoot;
 
 class DummyClass extends AggregateRoot
 {
-
-    private $DummyClassId;
-
-    public function getDummyClassId()
-    {
-        return $this->DummyClassId;
-    }
 }
