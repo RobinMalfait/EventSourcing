@@ -28,6 +28,8 @@ class MakeEventStoreTableCommand extends Command
 
     function __construct($app)
     {
+        parent::__construct();
+
         $this->app = $app;
     }
 
