@@ -1,17 +1,7 @@
 <?php namespace EventSourcing\Laravel\Commands;
 
-use Illuminate\Console\GeneratorCommand;
-
 class MakeAggregateCommand extends GeneratorCommand
 {
-    /**
-     * The Schema Builder
-     *
-     * @var \Illuminate\Contracts\Foundation\Application
-     */
-    private $app;
-
-    private $compiler;
 
     /**
      * The name and signature of the console command.
