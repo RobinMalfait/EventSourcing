@@ -5,8 +5,18 @@ use Illuminate\Database\Schema\Blueprint;
 
 class MakeEventStoreTableCommand extends Command
 {
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
     protected $signature = "event-sourcing:table";
 
+    /**
+     * The console command description
+     *
+     * @var string
+     */
     protected $description = 'Make the EventStore table.';
 
     /**
@@ -16,16 +26,17 @@ class MakeEventStoreTableCommand extends Command
      */
     public function handle()
     {
-        //        $this->database->create('eventstore', function(Blueprint $table)
-//        {
-//            $table->string('uuid', 50)->index();
-//
-//            $table->integer('playhead')->unsigned();
-//            $table->text('metadata');
-//            $table->text('payload');
-//            $table->dateTime('recorded_on');
-//
-//            $table->unique(['uuid', 'playhead']);
-//        });
+        $this->database->connection('eventstore')->create('eventstore', function(Blueprint $table)
+        {
+            $table->string('uuid', 50);
+
+            $table->integer('playhead')->unsigned();
+            $table->text('metadata');
+            $table->text('payload');
+            $table->dateTime('recorded_on');
+            $table->text('type');
+
+            $table->unique(['uuid', 'playhead']);
+        });
     }
 }
