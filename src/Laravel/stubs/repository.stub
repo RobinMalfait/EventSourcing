@@ -1,8 +1,8 @@
-<?php namespace $NAMESPACE$;
+<?php namespace DummyNamespace;
 
 use EventSourcing\EventStore\EventStoreRepository;
 
-final class $AGGREGATE$Repository
+final class DummyClass$Repository
 {
     private $repository;
 

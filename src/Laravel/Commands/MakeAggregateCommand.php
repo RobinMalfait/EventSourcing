@@ -1,8 +1,8 @@
 <?php namespace EventSourcing\Laravel\Commands;
 
-use Illuminate\Console\Command;
+use Illuminate\Console\GeneratorCommand;
 
-class MakeAggregateCommand extends Command
+class MakeAggregateCommand extends GeneratorCommand
 {
     /**
      * The Schema Builder
@@ -18,7 +18,7 @@ class MakeAggregateCommand extends Command
      *
      * @var string
      */
-    protected $signature = "event-sourcing:make:aggregate {aggregate}";
+    protected $signature = "event-sourcing:make:aggregate";
 
     /**
      * The console command description
@@ -27,36 +27,18 @@ class MakeAggregateCommand extends Command
      */
     protected $description = 'Make an aggregate.';
 
-    public function __construct($app)
-    {
-        parent::__construct();
-
-        $this->app = $app;
-    }
+    /**
+     * @var string
+     */
+    protected $type = "Aggregate";
 
     /**
-     * Execute the console command.
+     * Get the stub file for the generator.
      *
-     * @return mixed
+     * @return string
      */
-    public function handle()
+    protected function getStub()
     {
-        $fqdn = $this->argument('aggregate');
-        $parts = explode("\\", $fqdn);
-
-        $aggregate = end($parts);
-
-        unset($parts[count($parts) - 1]);
-
-        $folder = implode("/", $parts);
-
-        mkdir($folder, 0777, true);
-
-        file_put_contents($folder . '/' . $aggregate . '.php',
-            $this->compiler->compile(file_get_contents(__DIR__ . '../_templates/aggregate.txt'), [
-                'NAMESPACE' => implode('/', $parts),
-                'AGGREGATE' => $aggregate
-            ])
-        );
+        return __DIR__ . '/stubs/aggregate.stub';
     }
 }

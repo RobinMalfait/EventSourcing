@@ -1,0 +1,8 @@
+<?php namespace DummyNamespace;
+
+use EventSourcing\Domain\AggregateRoot;
+
+class DummyClass extends AggregateRoot
+{
+
+}

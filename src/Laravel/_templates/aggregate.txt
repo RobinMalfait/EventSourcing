@@ -1,8 +1,0 @@
-<?php namespace $NAMESPACE$;
-
-use EventSourcing\Domain\AggregateRoot;
-
-class $AGGREGATE$ extends AggregateRoot
-{
-
-}
