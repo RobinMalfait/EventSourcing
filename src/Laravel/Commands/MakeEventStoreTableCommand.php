@@ -10,7 +10,7 @@ class MakeEventStoreTableCommand extends Command
      * The Schema Builder
      * @var
      */
-    private $schema;
+    private $app;
 
     /**
      * The name and signature of the console command.
@@ -28,7 +28,7 @@ class MakeEventStoreTableCommand extends Command
 
     function __construct($app)
     {
-        $this->schema = $app['db']->connection('eventstore')->getSchemaBuilder();
+        $this->app = $app;
     }
 
     /**
@@ -38,7 +38,7 @@ class MakeEventStoreTableCommand extends Command
      */
     public function handle()
     {
-        $this->schema->create('eventstore', function(Blueprint $table)
+        $this->app['db']->connection('eventstore')->getSchemaBuilder()->create('eventstore', function(Blueprint $table)
         {
             $table->string('uuid', 50);
 
