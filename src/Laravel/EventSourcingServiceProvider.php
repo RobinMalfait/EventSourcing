@@ -5,6 +5,9 @@ use Illuminate\Support\ServiceProvider;
 
 class EventSourcingServiceProvider extends ServiceProvider
 {
+    protected $commands = [
+        'MakeEventStoreTable'
+    ];
     /**
      * Register the service provider.
      *
@@ -13,12 +16,34 @@ class EventSourcingServiceProvider extends ServiceProvider
     public function register()
     {
         $this->registerArtisanCommands();
+
+        $this->commands(
+            'command.event-sourcing.table.create'
+        );
     }
 
     private function registerArtisanCommands()
     {
-        $this->commands(
-            MakeEventStoreTableCommand::class
-        );
+        foreach($this->commands as $command)
+        {
+            $this->{"register{$command}Command"}();
+        }
     }
+
+    public function registerMakeEventStoreTableCommand()
+    {
+        $this->app->singleton('command.event-sourcing.table.create', function()
+        {
+            return new MakeEventStoreTableCommand($this->app);
+        });
+    }
+
+    public function provides()
+    {
+        return [
+            'command.event-sourcing.table.create'
+        ];
+    }
+
+
 }
