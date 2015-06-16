@@ -31,4 +31,15 @@ class MakeAggregateCommand extends GeneratorCommand
     {
         return __DIR__ . '/../stubs/aggregate.stub';
     }
+
+    /**
+     * Get the default namespace for the class.
+     *
+     * @param  string  $rootNamespace
+     * @return string
+     */
+    protected function getDefaultNamespace($rootNamespace)
+    {
+        return $rootNamespace . '\\' . str_plural($this->argument('name'));
+    }
 }
