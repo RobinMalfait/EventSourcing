@@ -26,7 +26,7 @@ class MakeEventStoreTableCommand extends Command
      */
     protected $description = 'Make the EventStore table.';
 
-    function __construct($app)
+    public function __construct($app)
     {
         parent::__construct();
 
@@ -40,17 +40,32 @@ class MakeEventStoreTableCommand extends Command
      */
     public function handle()
     {
-        $this->app['db']->connection('eventstore')->getSchemaBuilder()->create('eventstore', function(Blueprint $table)
-        {
-            $table->string('uuid', 50);
+        try {
+            $this->app['db']->connection('eventstore')->getSchemaBuilder()->create('eventstore', function (Blueprint $table) {
+                $table->string('uuid', 50);
 
-            $table->integer('playhead')->unsigned();
-            $table->text('metadata');
-            $table->text('payload');
-            $table->dateTime('recorded_on');
-            $table->text('type');
+                $table->integer('playhead')->unsigned();
+                $table->text('metadata');
+                $table->text('payload');
+                $table->dateTime('recorded_on');
+                $table->text('type');
 
-            $table->unique(['uuid', 'playhead']);
-        });
+                $table->unique(['uuid', 'playhead']);
+            });
+        } catch (\Exception $e) {
+            $this->error("This error has occurred: " . $e->getMessage());
+
+            $this->info("Make sure that you have an `evenstore` database connection." . PHP_EOL . "For example:");
+
+            $this->table(['key', 'value'], [
+                ['driver', 'mysql'],
+                ['host', "env('EVENTSTORE_DB_HOST', 'localhost')"],
+                ['database', "env('EVENTSTORE_DB_DATABASE', '')"],
+                ['username', "env('EVENTSTORE_DB_USERNAME', '')"],
+                ['password', "env('EVENTSTORE_DB_PASSWORD', '')"],
+            ]);
+        }
+
+        $this->info("The EventStore has been created!");
     }
 }

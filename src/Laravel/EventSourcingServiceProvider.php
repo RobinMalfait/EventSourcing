@@ -24,16 +24,14 @@ class EventSourcingServiceProvider extends ServiceProvider
 
     private function registerArtisanCommands()
     {
-        foreach($this->commands as $command)
-        {
+        foreach ($this->commands as $command) {
             $this->{"register{$command}Command"}();
         }
     }
 
     public function registerMakeEventStoreTableCommand()
     {
-        $this->app->singleton('command.event-sourcing.table.create', function()
-        {
+        $this->app->singleton('command.event-sourcing.table.create', function () {
             return new MakeEventStoreTableCommand($this->app);
         });
     }
@@ -44,6 +42,4 @@ class EventSourcingServiceProvider extends ServiceProvider
             'command.event-sourcing.table.create'
         ];
     }
-
-
 }
