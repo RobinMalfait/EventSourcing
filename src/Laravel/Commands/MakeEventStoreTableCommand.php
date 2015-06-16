@@ -1,8 +1,8 @@
 <?php namespace EventSourcing\Laravel\Commands;
 
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Schema\Builder;
 
 class MakeEventStoreTableCommand extends Command
 {
@@ -40,6 +40,7 @@ class MakeEventStoreTableCommand extends Command
      */
     public function handle()
     {
+        $success = false;
         try {
             $this->app['db']->connection('eventstore')->getSchemaBuilder()->create('eventstore', function (Blueprint $table) {
                 $table->string('uuid', 50);
@@ -52,7 +53,8 @@ class MakeEventStoreTableCommand extends Command
 
                 $table->unique(['uuid', 'playhead']);
             });
-        } catch (\Exception $e) {
+            $success = true;
+        } catch (Exception $e) {
             $this->error("This error has occurred: " . $e->getMessage());
 
             $this->info("Make sure that you have an `evenstore` database connection." . PHP_EOL . "For example:");
@@ -66,6 +68,8 @@ class MakeEventStoreTableCommand extends Command
             ]);
         }
 
-        $this->info("The EventStore has been created!");
+        if ($success) {
+            $this->info("The EventStore has been created!");
+        }
     }
 }
