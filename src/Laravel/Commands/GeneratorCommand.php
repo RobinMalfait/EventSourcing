@@ -63,7 +63,7 @@ abstract class GeneratorCommand extends Command
     {
         $name = str_replace($this->laravel->getNamespace(), '', $name);
 
-        return $this->laravel['path'] . '/' . $this->getFileName($name) . '.php';
+        return $this->laravel['path'] . '/' . str_replace('\\', '/', $name) . $this->fileSuffix . '.php';
     }
 
     /**
@@ -167,15 +167,6 @@ abstract class GeneratorCommand extends Command
         $class = str_replace($this->getNamespace($name) . '\\', '', $name);
 
         return str_replace('DummyClass', $class, $stub);
-    }
-
-    /**
-     * @param $name
-     * @return mixed
-     */
-    protected function getFileName($name)
-    {
-        return str_replace('\\', '/', $name) . $this->fileSuffix;
     }
 
     /**

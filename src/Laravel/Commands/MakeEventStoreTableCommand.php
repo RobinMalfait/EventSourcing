@@ -7,7 +7,6 @@ use Illuminate\Database\Schema\Blueprint;
 class MakeEventStoreTableCommand extends Command
 {
     /**
-     * The Schema Builder
      * @var
      */
     private $app;

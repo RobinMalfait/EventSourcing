@@ -3,6 +3,7 @@
 use EventSourcing\Laravel\Commands\MakeAggregateCommand;
 use EventSourcing\Laravel\Commands\MakeAggregateRepositoryCommand;
 use EventSourcing\Laravel\Commands\MakeEventStoreTableCommand;
+use EventSourcing\Laravel\Commands\ScaffoldAggregateCommand;
 use Illuminate\Support\ServiceProvider;
 
 class EventSourcingServiceProvider extends ServiceProvider
@@ -11,6 +12,7 @@ class EventSourcingServiceProvider extends ServiceProvider
         'MakeEventStoreTable',
         'MakeAggregate',
         'MakeAggregateRepository',
+        'ScaffoldAggregate',
     ];
     /**
      * Register the service provider.
@@ -24,7 +26,8 @@ class EventSourcingServiceProvider extends ServiceProvider
         $this->commands(
             'command.event-sourcing.table.create',
             'command.event-sourcing.make.aggregate',
-            'command.event-sourcing.make.aggregate-repository'
+            'command.event-sourcing.make.aggregate-repository',
+            'command.event-sourcing.make.scaffold'
         );
     }
 
@@ -49,6 +52,13 @@ class EventSourcingServiceProvider extends ServiceProvider
         });
     }
 
+    public function registerScaffoldAggregateCommand()
+    {
+        $this->app->singleton('command.event-sourcing.make.scaffold', function () {
+            return new ScaffoldAggregateCommand($this->app);
+        });
+    }
+
     public function registerMakeEventStoreTableCommand()
     {
         $this->app->singleton('command.event-sourcing.table.create', function () {
@@ -62,6 +72,7 @@ class EventSourcingServiceProvider extends ServiceProvider
             'command.event-sourcing.table.create',
             'command.event-sourcing.make.aggregate',
             'command.event-sourcing.make.aggregate-repository',
+            'command.event-sourcing.make.scaffold',
         ];
     }
 }
