@@ -2,7 +2,6 @@
 
 class MakeAggregateRepositoryCommand extends GeneratorCommand
 {
-
     /**
      * The name and signature of the console command.
      *

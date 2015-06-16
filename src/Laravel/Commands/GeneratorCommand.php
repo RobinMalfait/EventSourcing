@@ -14,7 +14,7 @@ abstract class GeneratorCommand extends Command
     /**
      *
      */
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
     }
@@ -34,7 +34,7 @@ abstract class GeneratorCommand extends Command
         $name = $this->parseName($this->getNameInput());
 
         if (file_exists($path = $this->getPath($name))) {
-            $this->error($this->type.' already exists!');
+            $this->error($this->type . ' already exists!');
 
             return false;
         }
@@ -43,7 +43,7 @@ abstract class GeneratorCommand extends Command
 
         file_put_contents($path, $this->buildClass($name));
 
-        $this->info($this->type.' created successfully.');
+        $this->info($this->type . ' created successfully.');
     }
 
     /**
@@ -56,7 +56,7 @@ abstract class GeneratorCommand extends Command
     {
         $name = str_replace($this->laravel->getNamespace(), '', $name);
 
-        return $this->laravel['path'].'/'.str_replace('\\', '/', $name).'.php';
+        return $this->laravel['path'] . '/' . str_replace('\\', '/', $name) . '.php';
     }
 
     /**
@@ -77,7 +77,7 @@ abstract class GeneratorCommand extends Command
             $name = str_replace('/', '\\', $name);
         }
 
-        return $this->parseName($this->getDefaultNamespace(trim($rootNamespace, '\\')).'\\'.$name);
+        return $this->parseName($this->getDefaultNamespace(trim($rootNamespace, '\\')) . '\\' . $name);
     }
 
     /**
@@ -99,7 +99,7 @@ abstract class GeneratorCommand extends Command
      */
     protected function makeDirectory($path)
     {
-        if ( ! is_dir(dirname($path))) {
+        if (! is_dir(dirname($path))) {
             mkdir(dirname($path), 0777, true);
         }
     }
@@ -157,7 +157,7 @@ abstract class GeneratorCommand extends Command
      */
     protected function replaceClass($stub, $name)
     {
-        $class = str_replace($this->getNamespace($name).'\\', '', $name);
+        $class = str_replace($this->getNamespace($name) . '\\', '', $name);
 
         return str_replace('DummyClass', $class, $stub);
     }
