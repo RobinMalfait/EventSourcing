@@ -26,9 +26,9 @@ class MakeEventStoreTableCommand extends Command
      */
     protected $description = 'Make the EventStore table.';
 
-    function __construct(Builder $builder)
+    function __construct()
     {
-        $this->schema = $builder->connection('eventstore')->getSchemaBuilder();
+        $this->schema = $this->app['db']->connection('eventstore')->getSchemaBuilder();
     }
 
     /**
