@@ -42,13 +42,13 @@ class MakeAggregateCommand extends Command
     public function handle()
     {
         $fqdn = $this->argument('aggregate');
-        $parts = implode("\\", $fqdn);
+        $parts = explode("\\", $fqdn);
 
         $aggregate = end($parts);
 
         unset($parts[count($parts) - 1]);
 
-        $folder = implode("/", $parts) . "/" . str_plural($aggregate);
+        $folder = implode("/", $parts);
 
         mkdir($folder, 0777, true);
 
