@@ -29,6 +29,6 @@ class MakeAggregateCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return __DIR__ . '../stubs/aggregate.stub';
+        return __DIR__ . '/../stubs/aggregate.stub';
     }
 }
