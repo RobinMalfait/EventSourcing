@@ -59,13 +59,20 @@ class MakeEventStoreTableCommand extends Command
 
             $this->info("Make sure that you have an `evenstore` database connection." . PHP_EOL . "For example:");
 
-            $this->table(['key', 'value'], [
-                ['driver', 'mysql'],
-                ['host', "env('EVENTSTORE_DB_HOST', 'localhost')"],
-                ['database', "env('EVENTSTORE_DB_DATABASE', '')"],
-                ['username', "env('EVENTSTORE_DB_USERNAME', '')"],
-                ['password', "env('EVENTSTORE_DB_PASSWORD', '')"],
-            ]);
+            $data = [
+                "'eventstore' => [",
+                "\t'driver'    => 'mysql',",
+                "\t'host'      => env('EVENTSTORE_DB_HOST', 'localhost'),",
+                "\t'database'  => env('EVENTSTORE_DB_DATABASE', 'forge'),",
+                "\t'username'  => env('EVENTSTORE_DB_USERNAME', 'forge'),",
+                "\t'password'  => env('EVENTSTORE_DB_PASSWORD', ''),",
+                "\t'charset'   => 'utf8',",
+                "\t'collation' => 'utf8_unicode_ci',",
+                "\t'prefix'    => '',",
+                "\t'strict'    => false,",
+                "],"
+            ];
+            $this->info(implode(PHP_EOL, $data));
         }
 
         if ($success) {
