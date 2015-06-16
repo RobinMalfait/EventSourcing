@@ -8,7 +8,7 @@ class MakeAggregateCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $signature = "event-sourcing:make:aggregate";
+    protected $signature = "event-sourcing:make-aggregate {name}";
 
     /**
      * The console command description

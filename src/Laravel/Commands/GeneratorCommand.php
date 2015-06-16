@@ -1,7 +1,6 @@
 <?php namespace EventSourcing\Laravel\Commands;
 
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputArgument;
 
 abstract class GeneratorCommand extends Command
 {
@@ -171,17 +170,5 @@ abstract class GeneratorCommand extends Command
     protected function getNameInput()
     {
         return $this->argument('name');
-    }
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['name', InputArgument::REQUIRED, 'The name of the class'],
-        ];
     }
 }
