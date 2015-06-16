@@ -22,6 +22,13 @@ class MakeAggregateRepositoryCommand extends GeneratorCommand
     protected $type = "Aggregate Repository";
 
     /**
+     * Filename Suffix
+     *
+     * @var string
+     */
+    protected $fileSuffix = "Repository";
+
+    /**
      * Get the stub file for the generator.
      *
      * @return string
