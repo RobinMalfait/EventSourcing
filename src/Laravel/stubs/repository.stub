@@ -1,23 +1,32 @@
 <?php namespace DummyNamespace;
 
+use EventSourcing\Domain\AggregateRoot;
 use EventSourcing\EventStore\EventStoreRepository;
 
-final class DummyClass$Repository
+final class DummyClassRepository
 {
     private $repository;
 
     public function __construct(EventStoreRepository $repository)
     {
         $this->repository = $repository;
-        $this->repository->setAggregateClass($AGGREGATE$::class);
+        $this->repository->setAggregateClass(DummyClass::class);
     }
 
+    /**
+     * @param DummyClassId $id
+     * @return DummyClass
+     */
     public function load($id)
     {
         return $this->repository->load($id);
     }
 
-    public function save($aggregateRoot)
+    /**
+     * @param AggregateRoot $aggregateRoot
+     * @return void
+     */
+    public function save(AggregateRoot $aggregateRoot)
     {
         $this->repository->save($aggregateRoot);
     }

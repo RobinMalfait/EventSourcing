@@ -72,6 +72,7 @@ class MakeEventStoreTableCommand extends Command
                 "\t'strict'    => false,",
                 "],"
             ];
+
             $this->info(implode(PHP_EOL, $data));
         }
 
