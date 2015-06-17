@@ -12,9 +12,9 @@ final class MysqlEventStore implements EventStore
 
     protected $dispatcher;
 
-    public function __construct(EventDispatcher $dispatcher)
+    public function __construct($app, EventDispatcher $dispatcher)
     {
-        $this->db = $this->app['db'];
+        $this->db = $app['db'];
         $this->dispatcher = $dispatcher;
     }
 
