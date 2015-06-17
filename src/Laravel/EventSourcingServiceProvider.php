@@ -81,7 +81,7 @@ class EventSourcingServiceProvider extends ServiceProvider
 
     public function registerRebuildProjectionsCommand()
     {
-        $this->app->singleton('command.event-sourcing.table.rebuild-projections', function () {
+        $this->app->singleton('command.event-sourcing.rebuild-projections', function () {
             return new RebuildProjectionsCommand($this->app);
         });
     }
@@ -95,7 +95,7 @@ class EventSourcingServiceProvider extends ServiceProvider
             'command.event-sourcing.make.aggregate-repository',
             'command.event-sourcing.make.aggregate-command',
             'command.event-sourcing.make.scaffold',
-            'command.event-sourcing.make.rebuild-projections',
+            'command.event-sourcing.rebuild-projections',
         ];
     }
 }
