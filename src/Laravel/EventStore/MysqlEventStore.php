@@ -12,7 +12,7 @@ final class MysqlEventStore implements EventStore
 
     public function __construct(DatabaseManager $databaseManager)
     {
-        $databaseManager->connection('eventstore');
+        $databaseManager->setDefaultConnection('eventstore');
 
         $this->db = $databaseManager;
     }
