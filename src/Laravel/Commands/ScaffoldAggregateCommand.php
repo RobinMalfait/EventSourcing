@@ -44,8 +44,7 @@ class ScaffoldAggregateCommand extends Command
             'Commands',
             'Events',
             'Exceptions',
-            'Listeners',
-            'ValueObjects'
+            'Listeners'
         ];
 
         $this->makeFolders($folders);
