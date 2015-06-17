@@ -1,4 +1,4 @@
-<?php namespace DummyNamespace\Events;
+<?php namespace DummyNamespace\Commands;
 
 use DummyNamespace\AggregateRepository;
 

@@ -33,7 +33,7 @@ class MakeAggregateCommandCommand extends Command
         $commandStub = $this->replaceNamespace($commandStub, $namespace)->replaceClass($commandStub, $command);
 
         $commandHandlerStub = file_get_contents(__DIR__ . "/../stubs/commandHandler.stub");
-        $commandHandlerStub = str_replace("Aggregate", $aggregate, $this->replaceNamespace($commandHandlerStub, $namespace)->replaceClass($commandHandlerStub, $commandHandler));
+        $commandHandlerStub = str_replace("Aggregate", $aggregate, $this->replaceNamespace($commandHandlerStub, $namespace)->replaceClass($commandHandlerStub, $command));
 
         file_put_contents($commandPath, $commandStub);
         file_put_contents($commandHandlerPath, $commandHandlerStub);
