@@ -5,7 +5,6 @@ use Illuminate\Console\Command;
 
 class RebuildProjectionsCommand extends Command
 {
-
     use Deserializer;
 
     /**
@@ -49,8 +48,7 @@ class RebuildProjectionsCommand extends Command
 
         $this->output->progressStart(count($events));
 
-        foreach($events as $event)
-        {
+        foreach ($events as $event) {
             $event = $this->deserialize(json_decode($event->payload, true));
 
             var_dump($event);
@@ -59,7 +57,6 @@ class RebuildProjectionsCommand extends Command
         }
 
         $this->output->progressFinish();
-
     }
 
     private function spacer()
@@ -69,10 +66,11 @@ class RebuildProjectionsCommand extends Command
 
     private function getAllEvents()
     {
-        return $this->db->table('eventstore')
+        return $this->app['db']
+                ->connection('eventstore')
+                ->table('eventstore')
                 ->select(['uuid', 'version', 'payload', 'type', 'recorded_on'])
                 ->orderBy('version', 'asc')
                 ->get();
     }
-
 }
