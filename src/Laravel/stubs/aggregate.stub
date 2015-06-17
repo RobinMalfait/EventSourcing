@@ -2,6 +2,6 @@
 
 use EventSourcing\Domain\AggregateRoot;
 
-class DummyClass extends AggregateRoot
+final class DummyClass extends AggregateRoot
 {
 }
