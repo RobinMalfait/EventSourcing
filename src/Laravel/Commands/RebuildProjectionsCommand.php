@@ -44,8 +44,11 @@ class RebuildProjectionsCommand extends Command
      */
     public function handle()
     {
-        $this->stepTitle("Reset and re-run all migrations");
-        $this->call("migrate:refresh");
+        $this->stepTitle("Reset all migrations");
+        $this->call("migrate:reset");
+
+        $this->stepTitle("Migrate all migrations");
+        $this->call("migrate");
 
         $this->stepTitle("Loading events from EventStore");
         $events = $this->getAllEvents();
