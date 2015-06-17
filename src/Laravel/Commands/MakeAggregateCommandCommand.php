@@ -52,7 +52,7 @@ class MakeAggregateCommandCommand extends Command
     {
         $name = str_replace($this->laravel->getNamespace(), '', $name);
 
-        return $this->laravel['path'] . '/' . str_replace('\\', '/', $name) . $this->fileSuffix . '.php';
+        return $this->laravel['path'] . '/' . str_replace('\\', '/', $name) . '.php';
     }
 
     /**
