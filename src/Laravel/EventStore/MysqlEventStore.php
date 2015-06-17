@@ -27,7 +27,7 @@ final class MysqlEventStore implements EventStore
             $this->storeEvent(
                 $event->getAggregateId(),
                 $aggregate->getPlayhead(),
-                $this->serialize($event),
+                json_encode($this->serialize($event)),
                 strtolower(str_replace("\\", ".", get_class($event)))
             );
         }
@@ -84,7 +84,7 @@ final class MysqlEventStore implements EventStore
         $events = [];
 
         foreach ($rows as $row) {
-            $events[] = $this->deserialize($row->payload);
+            $events[] = $this->deserialize(json_decode($row->payload, true));
         }
 
         return $events;
