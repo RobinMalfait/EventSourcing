@@ -2,7 +2,6 @@
 
 use EventSourcing\Domain\AggregateRoot;
 use EventSourcing\Domain\DomainEvent;
-use EventSourcing\EventSourcing\Replayer;
 use EventSourcing\Test\TestCase;
 
 class ReplayerTest extends TestCase
@@ -21,7 +20,7 @@ class ReplayerTest extends TestCase
      */
     public function the_playhead_should_be_negative_at_default()
     {
-        $this->assertEquals(-1, $this->aggregate->getPlayhead());
+        $this->assertEquals(-1, $this->aggregate->getVersion());
         $this->assertFalse($this->aggregate->isCalled());
     }
 
@@ -32,7 +31,7 @@ class ReplayerTest extends TestCase
     {
         $aggregate = ReplayerStub::replayEvents($this->events);
 
-        $this->assertEquals(0, $aggregate->getPlayhead());
+        $this->assertEquals(0, $aggregate->getVersion());
         $this->assertTrue($aggregate->isCalled());
     }
 }

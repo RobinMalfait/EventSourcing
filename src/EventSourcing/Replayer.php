@@ -5,7 +5,7 @@ use ReflectionClass;
 
 trait Replayer
 {
-    private $playhead = -1;
+    private $version = -1;
 
     public static function replayEvents($events)
     {
@@ -23,13 +23,13 @@ trait Replayer
             call_user_func([$this, $method], $event);
         }
 
-        $this->playhead++;
+        $this->version++;
 
         return $this;
     }
 
-    public function getPlayhead()
+    public function getVersion()
     {
-        return $this->playhead;
+        return $this->version;
     }
 }

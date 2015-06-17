@@ -42,14 +42,15 @@ class MakeEventStoreTableCommand extends Command
         $success = false;
         try {
             $this->app['db']->connection('eventstore')->getSchemaBuilder()->create('eventstore', function (Blueprint $table) {
+                $table->increments('id');
                 $table->string('uuid', 50);
 
-                $table->integer('playhead')->unsigned();
+                $table->integer('version')->unsigned();
                 $table->text('payload');
                 $table->dateTime('recorded_on');
                 $table->text('type');
 
-                $table->unique(['uuid', 'playhead']);
+                $table->unique(['uuid', 'version']);
             });
             $success = true;
         } catch (Exception $e) {
