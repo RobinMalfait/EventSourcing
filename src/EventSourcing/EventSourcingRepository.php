@@ -25,7 +25,6 @@ class EventSourcingRepository implements EventStoreRepository
         $this->eventStore = $eventStore;
     }
 
-
     /**
      * @param $class
      * @return mixed

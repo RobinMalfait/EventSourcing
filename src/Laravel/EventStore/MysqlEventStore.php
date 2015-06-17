@@ -15,7 +15,7 @@ final class MysqlEventStore implements EventStore
 
     public function __construct(DatabaseManager $databaseManager, EventDispatcher $dispatcher)
     {
-        $databaseManager->setDefaultConnection('eventstore');
+        $databaseManager->connection('eventstore');
 
         $this->db = $databaseManager;
         $this->dispatcher = $dispatcher;
@@ -36,9 +36,9 @@ final class MysqlEventStore implements EventStore
                 json_encode($this->serialize($event)),
                 strtolower(str_replace("\\", ".", get_class($event)))
             );
-        }
 
-        $this->dispatcher->dispatch((new \ReflectionClass($aggregate))->getName(), $aggregate->releaseEvents());
+            $this->dispatcher->dispatch($event);
+        }
     }
 
     /**
