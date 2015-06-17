@@ -58,14 +58,14 @@ class EventSourcingServiceProvider extends ServiceProvider
 
     public function registerMakeAggregateCommandCommand()
     {
-        $this->app->singleton('command.event-sourcing.make.aggregate-repository', function () {
+        $this->app->singleton('command.event-sourcing.make.aggregate-command', function () {
             return new MakeAggregateCommandCommand();
         });
     }
 
     public function registerScaffoldAggregateCommand()
     {
-        $this->app->singleton('command.event-sourcing.make.aggregate-command', function () {
+        $this->app->singleton('command.event-sourcing.make.scaffold', function () {
             return new ScaffoldAggregateCommand($this->app);
         });
     }
