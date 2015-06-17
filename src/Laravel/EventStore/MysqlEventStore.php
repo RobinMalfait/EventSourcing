@@ -32,7 +32,7 @@ final class MysqlEventStore implements EventStore
 
             $this->storeEvent(
                 $event->getAggregateId(),
-                $aggregate->getPlayhead(),
+                $aggregate->getVersion(),
                 json_encode($this->serialize($event)),
                 strtolower(str_replace("\\", ".", get_class($event)))
             );
@@ -52,18 +52,18 @@ final class MysqlEventStore implements EventStore
 
     /**
      * @param $uuid
-     * @param $playhead
+     * @param $version
      * @param $payload
      * @param $type
      */
-    private function storeEvent($uuid, $playhead, $payload, $type)
+    private function storeEvent($uuid, $version, $payload, $type)
     {
         $this->db->beginTransaction();
 
         try {
             $this->db->table('eventstore')->insert([
                 'uuid' => $uuid,
-                'playhead' => $playhead,
+                'version' => $version,
                 'payload' => $payload,
                 'recorded_on' => Carbon::now(),
                 'type' => $type
@@ -82,9 +82,9 @@ final class MysqlEventStore implements EventStore
     private function searchEventsFor($uuid)
     {
         $rows = $this->db->table('eventstore')
-                ->select(['uuid', 'playhead', 'payload', 'recorded_on', 'type'])
+                ->select(['uuid', 'version', 'payload', 'type', 'recorded_on'])
                 ->where('uuid', $uuid)
-                ->orderBy('playhead', 'asc')
+                ->orderBy('version', 'asc')
                 ->get();
 
         $events = [];

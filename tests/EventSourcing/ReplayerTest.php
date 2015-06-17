@@ -18,7 +18,7 @@ class ReplayerTest extends TestCase
     /**
      * @test
      */
-    public function the_playhead_should_be_negative_at_default()
+    public function the_version_should_be_negative_at_default()
     {
         $this->assertEquals(-1, $this->aggregate->getVersion());
         $this->assertFalse($this->aggregate->isCalled());
