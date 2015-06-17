@@ -4,17 +4,17 @@ class EventSourcingEventDispatcher implements EventDispatcher
 {
     private $listeners = [];
 
-    public function dispatch($eventName, $event)
+    public function dispatch($event)
     {
         if (is_array($event)) {
             foreach ($event as $e) {
-                $this->dispatch($eventName, $e);
+                $this->dispatch($e);
             }
 
             return;
         }
 
-        foreach ($this->getListeners($eventName) as $listener)
+        foreach ($this->getListeners(get_class($event)) as $listener)
         {
             $listener->handle($event);
         }

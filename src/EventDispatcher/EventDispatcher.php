@@ -2,9 +2,9 @@
 
 interface EventDispatcher
 {
-    public function dispatch($eventName, $event);
+    public function dispatch($event);
 
-    public function addListener($name, Listener $listener);
+    public function addListener($eventName, Listener $listener);
 
-    public function addListeners($name, $listeners);
+    public function addListeners($eventName, $listeners);
 }
