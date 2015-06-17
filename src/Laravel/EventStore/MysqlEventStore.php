@@ -5,6 +5,7 @@ use EventSourcing\EventDispatcher\EventDispatcher;
 use EventSourcing\EventStore\EventStore;
 use EventSourcing\Serialization\Deserializer;
 use EventSourcing\Serialization\Serializer;
+use Illuminate\Database\DatabaseManager;
 
 final class MysqlEventStore implements EventStore
 {
@@ -14,7 +15,10 @@ final class MysqlEventStore implements EventStore
 
     public function __construct($app, EventDispatcher $dispatcher)
     {
-        $this->db = $app['db'];
+        $db = $app['db'];
+        $db->connection('eventstore');
+
+        $this->db = $db;
         $this->dispatcher = $dispatcher;
     }
 
