@@ -30,10 +30,10 @@ class MakeAggregateCommandCommand extends Command
         $commandHandlerPath = $this->getPath($this->parseName($namespace) . "/" . $commandHandler);
 
         $commandStub = file_get_contents(__DIR__ . "/../stubs/command.stub");
-        $commandStub = $this->replaceNamespace($commandStub, $namespace)->replaceClass($commandStub, $commandStub);
+        $commandStub = $this->replaceNamespace($commandStub, $namespace)->replaceClass($commandStub, $command);
 
         $commandHandlerStub = file_get_contents(__DIR__ . "/../stubs/commandHandler.stub");
-        $commandHandlerStub = str_replace("Aggregate", $aggregate, $this->replaceNamespace($commandHandlerStub, $namespace)->replaceClass($commandHandlerStub, $commandStub));
+        $commandHandlerStub = str_replace("Aggregate", $aggregate, $this->replaceNamespace($commandHandlerStub, $namespace)->replaceClass($commandHandlerStub, $commandHandler));
 
         file_put_contents($commandPath, $commandStub);
         file_put_contents($commandHandlerPath, $commandHandlerStub);
