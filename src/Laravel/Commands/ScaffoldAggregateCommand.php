@@ -43,6 +43,7 @@ class ScaffoldAggregateCommand extends Command
         $folders = [
             'Commands',
             'Events',
+            'Exceptions',
             'Listeners',
             'ValueObjects'
         ];
