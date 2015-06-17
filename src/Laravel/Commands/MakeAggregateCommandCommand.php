@@ -16,7 +16,7 @@ class MakeAggregateCommandCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Make an command for an aggregate.';
+    protected $description = 'Make a command for an aggregate.';
 
     public function handle()
     {
