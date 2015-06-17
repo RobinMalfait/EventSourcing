@@ -1,0 +1,18 @@
+<?php namespace DummyNamespace\Events;
+
+use DummyNamespace\AggregateRepository;
+
+final class DummyClassHandler
+{
+    private $repository;
+
+    public function __construct(AggregateRepository $repository)
+    {
+        $this->repository = $repository;
+    }
+
+    public function handle(DummyClass $command)
+    {
+        //
+    }
+}
