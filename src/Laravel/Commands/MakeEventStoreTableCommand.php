@@ -47,8 +47,8 @@ class MakeEventStoreTableCommand extends Command
 
                 $table->integer('version')->unsigned();
                 $table->text('payload');
-                $table->dateTime('recorded_on');
                 $table->text('type');
+                $table->dateTime('recorded_on');
 
                 $table->unique(['uuid', 'version']);
             });
