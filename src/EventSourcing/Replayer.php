@@ -19,7 +19,9 @@ trait Replayer
         $reflection = new ReflectionClass($event);
         $method = "apply" . $reflection->getShortName();
 
-        call_user_func([$this, $method], $event);
+        if (method_exists($this, $method)) {
+            call_user_func([$this, $method], $event);
+        }
 
         $this->playhead++;
 
