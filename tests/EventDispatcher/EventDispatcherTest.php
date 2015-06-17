@@ -1,7 +1,7 @@
 <?php namespace EventSourcing\Test\EventDispatcher;
 
 use EventSourcing\Domain\DomainEvent;
-use EventSourcing\EventDispatcher\EventDispatcher;
+use EventSourcing\EventDispatcher\EventSourcingEventDispatcher;
 use EventSourcing\EventDispatcher\Listener;
 use EventSourcing\Test\TestCase;
 
@@ -13,7 +13,7 @@ class EventDispatcherTest extends TestCase
 
     public function setUp()
     {
-        $this->dispatcher = new EventDispatcher();
+        $this->dispatcher = new EventSourcingEventDispatcher();
 
         $this->listeners[] = new ListenerStub();
         $this->listeners[] = new ListenerStub();

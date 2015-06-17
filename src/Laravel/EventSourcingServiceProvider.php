@@ -1,5 +1,7 @@
 <?php namespace EventSourcing\Laravel;
 
+use EventSourcing\EventDispatcher\EventSourcingEventDispatcher;
+use EventSourcing\EventDispatcher\EventDispatcher;
 use EventSourcing\EventSourcing\EventSourcingRepository;
 use EventSourcing\EventStore\EventStore;
 use EventSourcing\EventStore\EventStoreRepository;
@@ -29,10 +31,11 @@ class EventSourcingServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->registerArtisanCommands();
-
+        $this->app->singleton(EventDispatcher::class, EventSourcingEventDispatcher::class);
         $this->app->singleton(EventStore::class, MysqlEventStore::class);
         $this->app->singleton(EventStoreRepository::class, EventSourcingRepository::class);
+
+        $this->registerArtisanCommands();
     }
 
     private function registerArtisanCommands()

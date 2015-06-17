@@ -1,5 +1,6 @@
 <?php namespace EventSourcing\Laravel\Commands;
 
+use EventSourcing\EventDispatcher\EventDispatcher;
 use EventSourcing\Serialization\Deserializer;
 use Illuminate\Console\Command;
 
@@ -31,6 +32,7 @@ class RebuildProjectionsCommand extends Command
         parent::__construct();
 
         $this->app = $app;
+        $this->dispatcher = $this->app->make(EventDispatcher::class);
     }
 
     /**
@@ -40,10 +42,10 @@ class RebuildProjectionsCommand extends Command
      */
     public function handle()
     {
-        $this->info($this->spacer() . " Reset and re-run all migrations " . $this->spacer());
+        $this->info($this->fillWith("Reset and re-run all migrations", "="));
         $this->call("migrate:refresh");
 
-        $this->info($this->spacer() . " Loading events from EventStore " . $this->spacer());
+        $this->info($this->fillWith("Loading events from EventStore"));
         $events = $this->getAllEvents();
 
         $this->output->progressStart(count($events));
@@ -51,17 +53,12 @@ class RebuildProjectionsCommand extends Command
         foreach ($events as $event) {
             $event = $this->deserialize(json_decode($event->payload, true));
 
-            var_dump($event);
+//            $this->dispatcher->dispatch($event);
 
             $this->output->progressAdvance();
         }
 
         $this->output->progressFinish();
-    }
-
-    private function spacer()
-    {
-        return str_repeat("=", 10);
     }
 
     private function getAllEvents()
@@ -70,7 +67,25 @@ class RebuildProjectionsCommand extends Command
                 ->connection('eventstore')
                 ->table('eventstore')
                 ->select(['uuid', 'version', 'payload', 'type', 'recorded_on'])
-                ->orderBy('version', 'asc')
                 ->get();
+    }
+
+    public function fillWith($string, $fillWith = "=", $width = 80)
+    {
+        if (! ((strlen($string) + 4) <= $width)) {
+            return $string;
+        }
+
+        $string = " " . $string . " ";
+        $count = strlen($string);
+        $halve = floor(($width - $count) / 2);
+
+        $newString = str_repeat($fillWith, $halve) . $string . str_repeat($fillWith, $halve);
+
+        if (strlen($newString) <= $width) {
+            $newString .= str_repeat($fillWith, $width - strlen($newString));
+        }
+
+        return $newString;
     }
 }
