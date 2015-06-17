@@ -7,6 +7,7 @@ use EventSourcing\Laravel\Commands\MakeAggregateCommand;
 use EventSourcing\Laravel\Commands\MakeAggregateCommandCommand;
 use EventSourcing\Laravel\Commands\MakeAggregateRepositoryCommand;
 use EventSourcing\Laravel\Commands\MakeEventStoreTableCommand;
+use EventSourcing\Laravel\Commands\RebuildProjectionsCommand;
 use EventSourcing\Laravel\Commands\ScaffoldAggregateCommand;
 use EventSourcing\Laravel\EventStore\MysqlEventStore;
 use Illuminate\Support\ServiceProvider;
@@ -19,6 +20,7 @@ class EventSourcingServiceProvider extends ServiceProvider
         'MakeAggregateRepository',
         'MakeAggregateCommand',
         'ScaffoldAggregate',
+        'RebuildProjections'
     ];
     /**
      * Register the service provider.
@@ -77,6 +79,14 @@ class EventSourcingServiceProvider extends ServiceProvider
         });
     }
 
+    public function registerRebuildProjectionsCommand()
+    {
+        $this->app->singleton('command.event-sourcing.table.rebuild-projections', function () {
+            return new RebuildProjectionsCommand($this->app);
+        });
+    }
+
+
     public function provides()
     {
         return [
@@ -85,6 +95,7 @@ class EventSourcingServiceProvider extends ServiceProvider
             'command.event-sourcing.make.aggregate-repository',
             'command.event-sourcing.make.aggregate-command',
             'command.event-sourcing.make.scaffold',
+            'command.event-sourcing.make.rebuild-projections',
         ];
     }
 }
