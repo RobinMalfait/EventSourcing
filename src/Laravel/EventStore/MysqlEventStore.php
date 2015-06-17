@@ -1,6 +1,7 @@
 <?php namespace EventSourcing\Laravel\EventStore;
 
 use Carbon\Carbon;
+use EventSourcing\EventDispatcher\EventDispatcher;
 use EventSourcing\EventStore\EventStore;
 use EventSourcing\Serialization\Deserializer;
 use EventSourcing\Serialization\Serializer;
@@ -10,11 +11,14 @@ final class MysqlEventStore implements EventStore
 {
     use Serializer, Deserializer;
 
-    public function __construct(DatabaseManager $databaseManager)
+    protected $dispatcher;
+
+    public function __construct(DatabaseManager $databaseManager, EventDispatcher $dispatcher)
     {
         $databaseManager->setDefaultConnection('eventstore');
 
         $this->db = $databaseManager;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
