@@ -12,6 +12,8 @@ final class MysqlEventStore implements EventStore
 
     public function __construct(DatabaseManager $databaseManager)
     {
+        $databaseManager->connection('eventstore');
+
         $this->db = $databaseManager;
     }
 
@@ -55,7 +57,7 @@ final class MysqlEventStore implements EventStore
         $this->db->beginTransaction();
 
         try {
-            $this->db->connection('eventstore')->table('eventstore')->insert([
+            $this->db->table('eventstore')->insert([
                 'uuid' => $uuid,
                 'playhead' => $playhead,
                 'payload' => $payload,
@@ -75,7 +77,7 @@ final class MysqlEventStore implements EventStore
      */
     private function searchEventsFor($uuid)
     {
-        $rows = $this->db->connection('eventstore')->table('eventstore')
+        $rows = $this->db->table('eventstore')
                 ->select(['uuid', 'playhead', 'payload', 'recorded_on', 'type'])
                 ->where('uuid', $uuid)
                 ->orderBy('playhead', 'asc')
