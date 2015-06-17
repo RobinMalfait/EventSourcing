@@ -1,7 +1,5 @@
 <?php namespace EventSourcing\EventSourcing;
 
-use Rhumsaa\Uuid\Uuid as RhumsaaUuid;
-
 final class Uuid
 {
     /**
@@ -11,6 +9,6 @@ final class Uuid
      */
     public static function generate()
     {
-        return (string) RhumsaaUuid::uuid4();
+        return (string) \Rhumsaa\Uuid\Uuid::uuid4();
     }
 }
