@@ -1,6 +1,8 @@
 <?php namespace EventSourcing\Laravel;
 
+use EventSourcing\EventSourcing\EventSourcingRepository;
 use EventSourcing\EventStore\EventStore;
+use EventSourcing\EventStore\EventStoreRepository;
 use EventSourcing\Laravel\Commands\MakeAggregateCommand;
 use EventSourcing\Laravel\Commands\MakeAggregateRepositoryCommand;
 use EventSourcing\Laravel\Commands\MakeEventStoreTableCommand;
@@ -26,6 +28,7 @@ class EventSourcingServiceProvider extends ServiceProvider
         $this->registerArtisanCommands();
 
         $this->app->singleton(EventStore::class, MysqlEventStore::class);
+        $this->app->singleton(EventStoreRepository::class, EventSourcingRepository::class);
     }
 
     private function registerArtisanCommands()
