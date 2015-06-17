@@ -1,9 +1,11 @@
 <?php namespace EventSourcing\Laravel;
 
+use EventSourcing\EventStore\EventStore;
 use EventSourcing\Laravel\Commands\MakeAggregateCommand;
 use EventSourcing\Laravel\Commands\MakeAggregateRepositoryCommand;
 use EventSourcing\Laravel\Commands\MakeEventStoreTableCommand;
 use EventSourcing\Laravel\Commands\ScaffoldAggregateCommand;
+use EventSourcing\Laravel\EventStore\MysqlEventStore;
 use Illuminate\Support\ServiceProvider;
 
 class EventSourcingServiceProvider extends ServiceProvider
@@ -23,12 +25,7 @@ class EventSourcingServiceProvider extends ServiceProvider
     {
         $this->registerArtisanCommands();
 
-        $this->commands(
-            'command.event-sourcing.table.create',
-            'command.event-sourcing.make.aggregate',
-            'command.event-sourcing.make.aggregate-repository',
-            'command.event-sourcing.make.scaffold'
-        );
+        $this->app->singleton(EventStore::class, MysqlEventStore::class);
     }
 
     private function registerArtisanCommands()
@@ -36,6 +33,8 @@ class EventSourcingServiceProvider extends ServiceProvider
         foreach ($this->commands as $command) {
             $this->{"register{$command}Command"}();
         }
+
+        $this->commands($this->provides());
     }
 
     public function registerMakeAggregateCommand()

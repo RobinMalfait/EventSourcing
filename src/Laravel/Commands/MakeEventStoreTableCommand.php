@@ -45,7 +45,6 @@ class MakeEventStoreTableCommand extends Command
                 $table->string('uuid', 50);
 
                 $table->integer('playhead')->unsigned();
-                $table->text('metadata');
                 $table->text('payload');
                 $table->dateTime('recorded_on');
                 $table->text('type');

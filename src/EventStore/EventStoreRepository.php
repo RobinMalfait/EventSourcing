@@ -1,5 +1,7 @@
 <?php namespace EventSourcing\EventStore;
 
+use EventSourcing\Domain\AggregateRoot;
+
 interface EventStoreRepository
 {
     /**
@@ -15,8 +17,8 @@ interface EventStoreRepository
     public function load($id);
 
     /**
-     * @param $aggregateRoot
+     * @param AggregateRoot $aggregateRoot
      * @return mixed
      */
-    public function save($aggregateRoot);
+    public function save(AggregateRoot $aggregateRoot);
 }

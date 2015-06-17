@@ -54,7 +54,7 @@ class ScaffoldAggregateCommand extends Command
 
     private function makeFolders($folders)
     {
-        foreach($folders as $folder) {
+        foreach ($folders as $folder) {
             $folder = $this->parseName(str_plural($this->argument('name')) . '/' . $folder);
 
             $name = str_replace($this->laravel->getNamespace(), '', $folder);
@@ -94,5 +94,4 @@ class ScaffoldAggregateCommand extends Command
     {
         return $rootNamespace;
     }
-
 }
