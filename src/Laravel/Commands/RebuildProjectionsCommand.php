@@ -13,6 +13,8 @@ class RebuildProjectionsCommand extends Command
      */
     private $app;
 
+    private $steps = 1;
+
     /**
      * The name and signature of the console command.
      *
@@ -42,10 +44,10 @@ class RebuildProjectionsCommand extends Command
      */
     public function handle()
     {
-        $this->info($this->fillWith("Reset and re-run all migrations", "="));
+        $this->stepTitle("Reset and re-run all migrations");
         $this->call("migrate:refresh");
 
-        $this->info($this->fillWith("Loading events from EventStore"));
+        $this->stepTitle("Loading events from EventStore");
         $events = $this->getAllEvents();
 
         $this->output->progressStart(count($events));
@@ -70,13 +72,20 @@ class RebuildProjectionsCommand extends Command
                 ->get();
     }
 
-    public function fillWith($string, $fillWith = "=", $width = 80)
+    private function stepTitle($string, $fillWith = "=", $width = 80)
     {
-        if (! ((strlen($string) + 4) <= $width)) {
+        $this->info($this->fillWith("Step " . $this->steps . ") " . $string, $fillWith, $width));
+
+        $this->steps++;
+    }
+
+    private function fillWith($string, $fillWith = "=", $width = 80)
+    {
+        if (! ((strlen($string) + 6) <= $width)) {
             return $string;
         }
 
-        $string = " " . $string . " ";
+        $string = "  " . $string . "  ";
         $count = strlen($string);
         $halve = floor(($width - $count) / 2);
 
@@ -86,6 +95,6 @@ class RebuildProjectionsCommand extends Command
             $newString .= str_repeat($fillWith, $width - strlen($newString));
         }
 
-        return $newString;
+        return PHP_EOL . $newString . PHP_EOL . PHP_EOL;
     }
 }
