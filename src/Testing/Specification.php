@@ -5,7 +5,7 @@ use EventSourcing\EventStore\EventStoreRepository;
 use EventSourcing\Exceptions\AggregateClassNotFoundException;
 use Exception;
 
-abstract class Specification extends TestHelper
+trait Specification
 {
     /**
      * If an exception is thrown, it will be caught in here
@@ -65,6 +65,14 @@ abstract class Specification extends TestHelper
         } catch (Exception $e) {
             $this->caughtException = $e;
         }
+    }
+
+    /**
+     * @param Exception $exception
+     */
+    protected function throws(Exception $exception)
+    {
+        $this->assertInstanceOf(get_class($exception), $this->caughtException);
     }
 }
 
