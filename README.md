@@ -20,8 +20,7 @@ $ composer require RobinMalfait/EventSourcing
 
 ## Usage
 
-``` php
-```
+Register the service provider
 
 ## Change log
 

@@ -20,9 +20,13 @@ class EventSourcingEventDispatcher implements EventDispatcher
         }
     }
 
-    public function addListener($name, Listener $listener)
+    public function addListener($name, $listener)
     {
-        $this->listeners[$name][] = $listener;
+        if ($listener instanceof Listener) {
+            $this->listeners[$name][] = $listener;
+        } else if (is_string($listener)) {
+            $this->addListener($name, app($listener));
+        }
     }
 
     public function addListeners($name, $listeners)
