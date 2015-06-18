@@ -4,6 +4,8 @@ class EventSourcingEventDispatcher implements EventDispatcher
 {
     private $listeners = [];
 
+    private $projectors = [];
+
     public function dispatch($event)
     {
         if (is_array($event)) {
@@ -17,6 +19,8 @@ class EventSourcingEventDispatcher implements EventDispatcher
         foreach ($this->getListeners(get_class($event)) as $listener) {
             $listener->handle($event);
         }
+
+        $this->project($event);
     }
 
     public function project($event)
@@ -29,10 +33,27 @@ class EventSourcingEventDispatcher implements EventDispatcher
             return;
         }
 
+        foreach($this->projectors as $projector)
+        {
+            $projector->handle($event);
+        }
+
         foreach ($this->getListeners(get_class($event)) as $listener) {
             if ($listener instanceof Projection) {
                 $listener->handle($event);
             }
+        }
+    }
+
+    public function addProjector($projector)
+    {
+        $this->projectors[] = $projector;
+    }
+
+    public function addProjectors($projectors)
+    {
+        foreach ($projectors as $projector) {
+            $this->addProjector($projector);
         }
     }
 
