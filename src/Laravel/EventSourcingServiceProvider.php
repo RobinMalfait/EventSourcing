@@ -32,10 +32,7 @@ class EventSourcingServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton(EventDispatcher::class, EventSourcingEventDispatcher::class);
-        $this->app->singleton(EventStore::class, function()
-        {
-            return new MysqlEventStore($this->app, app(EventDispatcher::class));
-        });
+        $this->app->singleton(EventStore::class, MysqlEventStore::class);
 
         $this->app->singleton(EventStoreRepository::class, EventSourcingRepository::class);
 

@@ -13,12 +13,9 @@ final class MysqlEventStore implements EventStore
 
     protected $dispatcher;
 
-    public function __construct($app, EventDispatcher $dispatcher)
+    public function __construct(DatabaseManager $databaseManager, EventDispatcher $dispatcher)
     {
-        $db = $app['db'];
-        $db->connection('eventstore');
-
-        $this->db = $db;
+        $this->db = $databaseManager->connection('eventstore');
         $this->dispatcher = $dispatcher;
     }
 
