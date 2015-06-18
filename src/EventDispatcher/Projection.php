@@ -2,7 +2,7 @@
 
 use EventSourcing\Domain\DomainEvent;
 
-interface Projection
+interface Projection extends Listener
 {
     public function handle(DomainEvent $event);
 }
