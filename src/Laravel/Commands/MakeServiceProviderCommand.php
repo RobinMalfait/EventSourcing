@@ -22,6 +22,13 @@ class MakeServiceProviderCommand extends GeneratorCommand
     protected $type = "Service Provider";
 
     /**
+     * Filename Suffix
+     *
+     * @var string
+     */
+    protected $fileSuffix = "ServiceProvider";
+
+    /**
      * Get the stub file for the generator.
      *
      * @return string
