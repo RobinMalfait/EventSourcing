@@ -44,10 +44,13 @@ class ScaffoldAggregateCommand extends Command
             'Commands',
             'Events',
             'Exceptions',
-            'Listeners'
+            'Listeners',
+            'Projectors'
         ];
 
         $this->makeFolders($folders);
+
+        $this->callSilent('event-sourcing:make-service-provider', ['name' => $name]);
 
         $this->info("Scaffolding $name successful!");
     }

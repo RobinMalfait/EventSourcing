@@ -33,8 +33,7 @@ class EventSourcingEventDispatcher implements EventDispatcher
             return;
         }
 
-        foreach($this->projectors as $projector)
-        {
+        foreach ($this->projectors as $projector) {
             $projector->handle($event);
         }
 

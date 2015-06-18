@@ -22,6 +22,7 @@ class EventSourcingServiceProvider extends ServiceProvider
         'MakeAggregateRepository',
         'MakeAggregateCommand',
         'ScaffoldAggregate',
+        'MakeServiceProvider',
         'RebuildProjections'
     ];
     /**
@@ -83,6 +84,14 @@ class EventSourcingServiceProvider extends ServiceProvider
         });
     }
 
+    public function registerMakeServiceProviderCommand()
+    {
+        $this->app->singleton('command.event-sourcing.make.service-provider', function () {
+            return new MakeServiceProviderCommand();
+        });
+    }
+
+
     public function registerRebuildProjectionsCommand()
     {
         $this->app->singleton('command.event-sourcing.rebuild-projections', function () {
@@ -99,6 +108,7 @@ class EventSourcingServiceProvider extends ServiceProvider
             'command.event-sourcing.make.aggregate-repository',
             'command.event-sourcing.make.aggregate-command',
             'command.event-sourcing.make.scaffold',
+            'command.event-sourcing.make.service-provider',
             'command.event-sourcing.rebuild-projections',
         ];
     }

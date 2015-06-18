@@ -1,0 +1,26 @@
+<?php namespace DummyNamespace;
+
+use EventSourcing\EventDispatcher\EventDispatcher;
+use Illuminate\Support\ServiceProvider;
+use DummyNamespace\Projectors\DummyClassProjector;
+
+final class DummyClassServiceProvider extends ServiceProvider
+{
+
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $dispatcher = app(EventDispatcher::class);
+
+        $dispatcher->addProjector(DummyClassProjector::class);
+
+        // $dispatcher->addProjectors(['projectors]);
+
+        // $dispatcher->addListener('event', 'listener');
+        // $dispatcher->addListeners('event', ['listeners']);
+    }
+}
