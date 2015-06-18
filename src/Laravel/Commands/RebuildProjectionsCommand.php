@@ -77,9 +77,13 @@ class RebuildProjectionsCommand extends Command
 
     private function stepTitle($string, $fillWith = "=")
     {
-        $data = "Step " . $this->steps . ") " . $string;
+        $comment = [
+            "<comment>",
+            "</comment>",
+        ];
+        $data = $comment[0] . "Step " . $this->steps . ")" . $comment[1] . " " . $string;
 
-        $this->info(PHP_EOL . $data . PHP_EOL . str_repeat($fillWith, strlen($data)) . PHP_EOL);
+        $this->info(PHP_EOL . $data . PHP_EOL . "<comment>" . str_repeat($fillWith, strlen($data) - strlen(implode("", $comment))) . PHP_EOL);
 
         $this->steps++;
     }
