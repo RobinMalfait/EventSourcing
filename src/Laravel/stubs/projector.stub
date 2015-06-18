@@ -1,0 +1,11 @@
+<?php namespace DummyNamespace;
+
+use EventSourcing\Domain\DomainEvent;
+
+final class DummyClassProjector
+{
+    public function handle(DomainEvent $event)
+    {
+        // Do something with the DomainEvent
+    }
+}

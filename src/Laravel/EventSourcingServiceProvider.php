@@ -9,6 +9,7 @@ use EventSourcing\Laravel\Commands\MakeAggregateCommand;
 use EventSourcing\Laravel\Commands\MakeAggregateCommandCommand;
 use EventSourcing\Laravel\Commands\MakeAggregateRepositoryCommand;
 use EventSourcing\Laravel\Commands\MakeEventStoreTableCommand;
+use EventSourcing\Laravel\Commands\MakeProjectorCommand;
 use EventSourcing\Laravel\Commands\MakeServiceProviderCommand;
 use EventSourcing\Laravel\Commands\RebuildProjectionsCommand;
 use EventSourcing\Laravel\Commands\ScaffoldAggregateCommand;
@@ -24,6 +25,7 @@ class EventSourcingServiceProvider extends ServiceProvider
         'MakeAggregateCommand',
         'ScaffoldAggregate',
         'MakeServiceProvider',
+        'MakeProjector',
         'RebuildProjections'
     ];
     /**
@@ -92,6 +94,12 @@ class EventSourcingServiceProvider extends ServiceProvider
         });
     }
 
+    public function registerMakeProjectorCommand()
+    {
+        $this->app->singleton('command.event-sourcing.make.projector', function () {
+            return new MakeProjectorCommand();
+        });
+    }
 
     public function registerRebuildProjectionsCommand()
     {
@@ -110,6 +118,7 @@ class EventSourcingServiceProvider extends ServiceProvider
             'command.event-sourcing.make.aggregate-command',
             'command.event-sourcing.make.scaffold',
             'command.event-sourcing.make.service-provider',
+            'command.event-sourcing.make.projector',
             'command.event-sourcing.rebuild-projections',
         ];
     }
