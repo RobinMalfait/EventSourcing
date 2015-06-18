@@ -58,7 +58,7 @@ class RebuildProjectionsCommand extends Command
         foreach ($events as $event) {
             $event = $this->deserialize(json_decode($event->payload, true));
 
-            $this->dispatcher->dispatch($event);
+            $this->dispatcher->project($event);
 
             $this->output->progressAdvance();
         }

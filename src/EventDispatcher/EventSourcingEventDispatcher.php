@@ -14,17 +14,34 @@ class EventSourcingEventDispatcher implements EventDispatcher
             return;
         }
 
-        foreach ($this->getListeners(get_class($event)) as $listener)
-        {
+        foreach ($this->getListeners(get_class($event)) as $listener) {
             $listener->handle($event);
         }
     }
+
+    public function project($event)
+    {
+        if (is_array($event)) {
+            foreach ($event as $e) {
+                $this->dispatch($e);
+            }
+
+            return;
+        }
+
+        foreach ($this->getListeners(get_class($event)) as $listener) {
+            if ($listener instanceof Projection) {
+                $listener->handle($event);
+            }
+        }
+    }
+
 
     public function addListener($name, $listener)
     {
         if ($listener instanceof Listener) {
             $this->listeners[$name][] = $listener;
-        } else if (is_string($listener)) {
+        } elseif (is_string($listener)) {
             $this->addListener($name, app($listener));
         }
     }
