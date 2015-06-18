@@ -51,6 +51,7 @@ class ScaffoldAggregateCommand extends Command
         $this->makeFolders($folders);
 
         $this->callSilent('event-sourcing:make-service-provider', ['name' => $name]);
+        $this->callSilent('event-sourcing:make-projector', ['name' => $name]);
 
         $this->info("Scaffolding $name successful!");
     }
