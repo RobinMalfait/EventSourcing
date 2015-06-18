@@ -9,6 +9,7 @@ use EventSourcing\Laravel\Commands\MakeAggregateCommand;
 use EventSourcing\Laravel\Commands\MakeAggregateCommandCommand;
 use EventSourcing\Laravel\Commands\MakeAggregateRepositoryCommand;
 use EventSourcing\Laravel\Commands\MakeEventStoreTableCommand;
+use EventSourcing\Laravel\Commands\MakeServiceProviderCommand;
 use EventSourcing\Laravel\Commands\RebuildProjectionsCommand;
 use EventSourcing\Laravel\Commands\ScaffoldAggregateCommand;
 use EventSourcing\Laravel\EventStore\MysqlEventStore;
