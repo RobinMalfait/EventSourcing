@@ -53,6 +53,10 @@ trait Specification
      */
     public function setUp()
     {
+        if (is_callable('parent::setUp')) {
+            parent::setUp();
+        }
+
         try {
             $events = $this->given();
 
