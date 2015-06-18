@@ -47,6 +47,11 @@ class EventSourcingEventDispatcher implements EventDispatcher
 
     public function addProjector($projector)
     {
+        if (is_string($projector)) {
+            $this->addProjector(app($projector));
+            return;
+        }
+
         $this->projectors[] = $projector;
     }
 
