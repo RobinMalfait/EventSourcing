@@ -75,29 +75,12 @@ class RebuildProjectionsCommand extends Command
                 ->get();
     }
 
-    private function stepTitle($string, $fillWith = "=", $width = 80)
+    private function stepTitle($string, $fillWith = "=")
     {
-        $this->info($this->fillWith("Step " . $this->steps . ") " . $string, $fillWith, $width));
+        $data = "Step " . $this->steps . ") " . $string;
+
+        $this->info(PHP_EOL . $data . PHP_EOL . str_repeat($fillWith, strlen($data)) . PHP_EOL);
 
         $this->steps++;
-    }
-
-    private function fillWith($string, $fillWith = "=", $width = 80)
-    {
-        if (! ((strlen($string) + 6) <= $width)) {
-            return $string;
-        }
-
-        $string = "  " . $string . "  ";
-        $count = strlen($string);
-        $halve = floor(($width - $count) / 2);
-
-        $newString = str_repeat($fillWith, $halve) . $string . str_repeat($fillWith, $halve);
-
-        if (strlen($newString) <= $width) {
-            $newString .= str_repeat($fillWith, $width - strlen($newString));
-        }
-
-        return PHP_EOL . $newString . PHP_EOL . PHP_EOL;
     }
 }
