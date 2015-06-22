@@ -44,13 +44,16 @@ class RebuildProjectionsCommand extends Command
      */
     public function handle()
     {
-        $this->stepTitle("Reset all migrations");
+        $this->printHeader("Application is going down");
+        $this->call("down");
+
+        $this->printHeader("Reset all migrations");
         $this->call("migrate:reset");
 
-        $this->stepTitle("Migrate all migrations");
+        $this->printHeader("Migrate all migrations");
         $this->call("migrate");
 
-        $this->stepTitle("Loading events from EventStore");
+        $this->printHeader("Loading events from EventStore");
         $events = $this->getAllEvents();
 
         $this->output->progressStart(count($events));
@@ -64,6 +67,9 @@ class RebuildProjectionsCommand extends Command
         }
 
         $this->output->progressFinish();
+
+        $this->printHeader("Application is going back up");
+        $this->call("up");
     }
 
     private function getAllEvents()
@@ -75,7 +81,7 @@ class RebuildProjectionsCommand extends Command
                 ->get();
     }
 
-    private function stepTitle($string, $fillWith = "=")
+    private function printHeader($string, $fillWith = "=")
     {
         $comment = [
             "<comment>",
