@@ -2,7 +2,7 @@
 
 use Illuminate\Contracts\Foundation\Application;
 
-final class Dispatcher
+trait Dispatcher
 {
     private $app;
 
