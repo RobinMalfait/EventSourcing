@@ -1,5 +1,6 @@
 <?php namespace EventSourcing\Laravel\Commands;
 
+use Carbon\Carbon;
 use EventSourcing\EventDispatcher\EventDispatcher;
 use EventSourcing\Serialization\Deserializer;
 use Illuminate\Console\Command;
@@ -59,9 +60,16 @@ class RebuildProjectionsCommand extends Command
         $this->output->progressStart(count($events));
 
         foreach ($events as $event) {
+            $metadata = [
+                'uuid' => $event->uuid,
+                'version' => $event->version,
+                'type' => $event->type,
+                'recorded_on' => new Carbon($event->recorded_on)
+            ];
+
             $event = $this->deserialize(json_decode($event->payload, true));
 
-            $this->dispatcher->project($event);
+            $this->dispatcher->project($event, $metadata);
 
             $this->output->progressAdvance();
         }

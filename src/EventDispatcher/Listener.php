@@ -4,5 +4,5 @@ use EventSourcing\Domain\DomainEvent;
 
 interface Listener
 {
-    public function handle(DomainEvent $event);
+    public function handle(DomainEvent $event, $metadata = []);
 }

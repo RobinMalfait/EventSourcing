@@ -6,24 +6,24 @@ class EventSourcingEventDispatcher implements EventDispatcher
 
     private $projectors = [];
 
-    public function dispatch($event)
+    public function dispatch($event, $metadata = [])
     {
         if (is_array($event)) {
             foreach ($event as $e) {
-                $this->dispatch($e);
+                $this->dispatch($e, $metadata);
             }
 
             return;
         }
 
         foreach ($this->getListeners(get_class($event)) as $listener) {
-            $listener->handle($event);
+            $listener->handle($event, $metadata);
         }
 
-        $this->project($event);
+        $this->project($event, $metadata);
     }
 
-    public function project($event)
+    public function project($event, $metadata = [])
     {
         if (is_array($event)) {
             foreach ($event as $e) {
@@ -34,12 +34,12 @@ class EventSourcingEventDispatcher implements EventDispatcher
         }
 
         foreach ($this->projectors as $projector) {
-            $projector->handle($event);
+            $projector->handle($event, $metadata);
         }
 
         foreach ($this->getListeners(get_class($event)) as $listener) {
             if ($listener instanceof Projection) {
-                $listener->handle($event);
+                $listener->handle($event, $metadata);
             }
         }
     }

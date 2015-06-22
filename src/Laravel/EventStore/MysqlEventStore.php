@@ -28,14 +28,21 @@ final class MysqlEventStore implements EventStore
         foreach ($aggregate->releaseEvents() as $event) {
             $aggregate->applyAnEvent($event);
 
-            $this->storeEvent(
-                $event->getAggregateId(),
-                $aggregate->getVersion(),
-                json_encode($this->serialize($event)),
-                strtolower(str_replace("\\", ".", get_class($event)))
-            );
+            $uuid = $event->getAggregateId();
+            $version = $aggregate->getVersion();
+            $type = strtolower(str_replace("\\", ".", get_class($event)));
+            $recordedOn = Carbon::now();
 
-            $this->dispatcher->dispatch($event);
+            $this->storeEvent($uuid, $version, json_encode($this->serialize($event)), $recordedOn, $type);
+
+            $metadata = [
+                'uuid' => $uuid,
+                'version' => $version,
+                'type' => $type,
+                'recorded_on' => $recordedOn
+            ];
+
+            $this->dispatcher->dispatch($event, $metadata);
         }
     }
 
@@ -52,9 +59,10 @@ final class MysqlEventStore implements EventStore
      * @param $uuid
      * @param $version
      * @param $payload
+     * @param $recordedOn
      * @param $type
      */
-    private function storeEvent($uuid, $version, $payload, $type)
+    private function storeEvent($uuid, $version, $payload, $recordedOn, $type)
     {
         $this->db->beginTransaction();
 
@@ -63,7 +71,7 @@ final class MysqlEventStore implements EventStore
                 'uuid' => $uuid,
                 'version' => $version,
                 'payload' => $payload,
-                'recorded_on' => Carbon::now(),
+                'recorded_on' => $recordedOn,
                 'type' => $type
             ]);
 
