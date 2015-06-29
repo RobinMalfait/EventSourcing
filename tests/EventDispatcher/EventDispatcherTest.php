@@ -50,7 +50,7 @@ class ListenerStub implements Listener
 {
     private $isCalled = false;
 
-    public function handle(DomainEvent $event)
+    public function handle(DomainEvent $event, $metadata = [])
     {
         $this->isCalled = true;
     }
