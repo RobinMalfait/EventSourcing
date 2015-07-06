@@ -3,6 +3,7 @@
 use Carbon\Carbon;
 use EventSourcing\EventDispatcher\EventDispatcher;
 use EventSourcing\EventStore\EventStore;
+use EventSourcing\Exceptions\NoEventsFoundException;
 use EventSourcing\Serialization\Deserializer;
 use EventSourcing\Serialization\Serializer;
 use Illuminate\Contracts\Foundation\Application;
@@ -84,6 +85,7 @@ final class MysqlEventStore implements EventStore
     /**
      * @param $uuid
      * @return array
+     * @throws NoEventsFoundException
      */
     private function searchEventsFor($uuid)
     {
@@ -92,6 +94,10 @@ final class MysqlEventStore implements EventStore
                 ->where('uuid', $uuid)
                 ->orderBy('version', 'asc')
                 ->get();
+
+        if (! $rows) {
+            throw new NoEventsFoundException();
+        }
 
         $events = [];
 
