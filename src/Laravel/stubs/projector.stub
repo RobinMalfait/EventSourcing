@@ -4,7 +4,7 @@ use EventSourcing\Domain\DomainEvent;
 
 final class DummyClassProjector
 {
-    public function handle(DomainEvent $event)
+    public function handle(DomainEvent $event, $metadata = [])
     {
         // Do something with the DomainEvent
     }
