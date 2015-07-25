@@ -15,7 +15,7 @@ This project is written using PSR2
 Via Composer
 
 ``` bash
-$ composer require RobinMalfait/EventSourcing
+$ composer require robin-malfait/event-sourcing
 ```
 
 ## Usage
