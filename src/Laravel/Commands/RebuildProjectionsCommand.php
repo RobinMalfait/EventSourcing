@@ -45,6 +45,8 @@ class RebuildProjectionsCommand extends Command
      */
     public function handle()
     {
+        $start = microtime(true);
+
         $this->printHeader("Application is going down");
         $this->call("down");
 
@@ -68,9 +70,7 @@ class RebuildProjectionsCommand extends Command
             ];
 
             $event = $this->deserialize(json_decode($event->payload, true));
-
             $this->dispatcher->project($event, $metadata);
-
             $this->output->progressAdvance();
         }
 
@@ -78,27 +78,50 @@ class RebuildProjectionsCommand extends Command
 
         $this->printHeader("Application is going back up");
         $this->call("up");
+
+        $this->printHeader("Statistics");
+
+        $end = microtime(true);
+
+        $executionTime = $this->calcExecutionTime($end - $start);
+
+        $this->info("Excecution time: <comment>" . $executionTime . "</comment>");
     }
 
     private function getAllEvents()
     {
         return $this->app['db']
-                ->connection('eventstore')
-                ->table('eventstore')
-                ->select(['uuid', 'version', 'payload', 'type', 'recorded_on'])
-                ->get();
+            ->connection('eventstore')
+            ->table('eventstore')
+            ->select(['uuid', 'version', 'payload', 'type', 'recorded_on'])
+            ->get();
     }
 
     private function printHeader($string, $fillWith = "=")
     {
-        $comment = [
-            "<comment>",
-            "</comment>",
-        ];
-        $data = $comment[0] . "Step " . $this->steps . ")" . $comment[1] . " " . $string;
+        $comment = collect(["<comment>", "</comment>"]);
 
-        $this->info(PHP_EOL . $data . PHP_EOL . "<comment>" . str_repeat($fillWith, strlen($data) - strlen(implode("", $comment))) . PHP_EOL);
+        $data = $comment->first() . "Step " . $this->steps . ")" . $comment->last() . " " . $string;
+
+        $this->info(PHP_EOL . $data . PHP_EOL . "<comment>" . str_repeat($fillWith, strlen($data) - strlen(implode("", $comment->all()))) . PHP_EOL);
 
         $this->steps++;
+    }
+
+    private function calcExecutionTime($timeInSeconds)
+    {
+        $time = $timeInSeconds;
+
+        if ($time > 59) {
+            $time /= 60;
+            $symbol = "m";
+        } elseif ($time > 0.99) {
+            $symbol = "s";
+        } else {
+            $time *= 1000;
+            $symbol = "ms";
+        }
+
+        return round($time, 1) . $symbol;
     }
 }
