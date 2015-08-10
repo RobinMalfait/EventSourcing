@@ -47,45 +47,47 @@ class RebuildProjectionsCommand extends Command
     {
         $start = microtime(true);
 
-        $this->printHeader("Application is going down");
-        $this->call("down");
+        $this->action("Application is going down", function() {
+            $this->call("down");
+        });
 
-        $this->printHeader("Reset all migrations");
-        $this->call("migrate:reset");
+        $this->action("Reset all migrations", function() {
+            $this->call("migrate:reset");
+        });
 
-        $this->printHeader("Migrate all migrations");
-        $this->call("migrate");
+        $this->action("Migrate all migrations", function() {
+            $this->call("migrate");
+        });
 
-        $this->printHeader("Loading events from EventStore");
-        $events = $this->getAllEvents();
+        $this->action("Loading events from EventStore", function() {
+            $events = $this->getAllEvents();
 
-        $this->output->progressStart(count($events));
+            $this->output->progressStart(count($events));
 
-        foreach ($events as $event) {
-            $metadata = [
-                'uuid' => $event->uuid,
-                'version' => $event->version,
-                'type' => $event->type,
-                'recorded_on' => new Carbon($event->recorded_on)
-            ];
+            foreach ($events as $event) {
+                $metadata = [
+                    'uuid' => $event->uuid,
+                    'version' => $event->version,
+                    'type' => $event->type,
+                    'recorded_on' => new Carbon($event->recorded_on)
+                ];
 
-            $event = $this->deserialize(json_decode($event->payload, true));
-            $this->dispatcher->project($event, $metadata);
-            $this->output->progressAdvance();
-        }
+                $event = $this->deserialize(json_decode($event->payload, true));
+                $this->dispatcher->project($event, $metadata);
+                $this->output->progressAdvance();
+            }
 
-        $this->output->progressFinish();
+            $this->output->progressFinish();
+        });
 
-        $this->printHeader("Application is going back up");
-        $this->call("up");
+        $this->action("Application is going back up", function() {
+            $this->call("up");
+        });
 
         $this->printHeader("Statistics");
-
         $end = microtime(true);
-
         $executionTime = $this->calcExecutionTime($end - $start);
-
-        $this->info("Excecution time: <comment>" . $executionTime . "</comment>");
+        $this->info("Total Excecution time: <comment>" . $executionTime . "</comment>");
     }
 
     private function getAllEvents()
@@ -106,6 +108,17 @@ class RebuildProjectionsCommand extends Command
         $this->info(PHP_EOL . $data . PHP_EOL . "<comment>" . str_repeat($fillWith, strlen($data) - strlen(implode("", $comment->all()))) . PHP_EOL);
 
         $this->steps++;
+    }
+
+    private function action($title, Callable $method)
+    {
+        $this->printHeader($title);
+        $start = microtime(true);
+        call_user_func($method);
+        $end = microtime(true);
+
+        $executionTime = $this->calcExecutionTime($end - $start);
+        $this->info("Excecution time: <comment>" . $executionTime . "</comment>");
     }
 
     private function calcExecutionTime($timeInSeconds)
