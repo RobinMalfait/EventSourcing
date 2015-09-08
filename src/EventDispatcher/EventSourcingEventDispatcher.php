@@ -16,11 +16,11 @@ class EventSourcingEventDispatcher implements EventDispatcher
             return;
         }
 
+        $this->project($event, $metadata);
+
         foreach ($this->getListeners(get_class($event)) as $listener) {
             $listener->handle($event, $metadata);
         }
-
-        $this->project($event, $metadata);
     }
 
     public function project($event, $metadata = [])
