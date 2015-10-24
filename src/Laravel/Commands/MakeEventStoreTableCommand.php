@@ -56,7 +56,7 @@ class MakeEventStoreTableCommand extends Command
         } catch (Exception $e) {
             $this->error("This error has occurred: " . $e->getMessage());
 
-            $this->info("Make sure that you have an `evenstore` database connection." . PHP_EOL . "For example:");
+            $this->info("Make sure that you have an `eventstore` database connection." . PHP_EOL . "For example:");
 
             $data = [
                 "'eventstore' => [",
