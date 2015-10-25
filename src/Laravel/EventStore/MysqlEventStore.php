@@ -7,16 +7,30 @@ use EventSourcing\Exceptions\NoEventsFoundException;
 use EventSourcing\Serialization\Deserializer;
 use EventSourcing\Serialization\Serializer;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Database\QueryException;
+use Illuminate\Contracts\Logging\Log;
+use Illuminate\Support\Facades\Queue;
 
 final class MysqlEventStore implements EventStore
 {
     use Serializer, Deserializer;
 
+    protected $db;
+
+    /**
+     * @var EventDispatcher
+     */
     protected $dispatcher;
+
+    /**
+     * @var Log
+     */
+    protected $log;
 
     public function __construct(Application $app, EventDispatcher $dispatcher)
     {
-        $this->db = $app['db']->connection('eventstore');
+        $this->log = $app->make(Log::class);
+        $this->db = $app->make('db')->connection('eventstore');
         $this->dispatcher = $dispatcher;
     }
 
@@ -43,7 +57,10 @@ final class MysqlEventStore implements EventStore
                 'recorded_on' => $recordedOn
             ];
 
-            $this->dispatcher->dispatch($event, $metadata);
+            Queue::push(function() use ($this, $event, $metadata)
+            {
+                $this->dispatcher->dispatch($event, $metadata);
+            });
         }
     }
 
@@ -79,6 +96,7 @@ final class MysqlEventStore implements EventStore
             $this->db->commit();
         } catch (QueryException $ex) {
             $this->db->rollBack();
+            $this->log->error("An error has occurred while storing an event [" . $ex->getMessage() . "]", $ex->getTrace());
         }
     }
 

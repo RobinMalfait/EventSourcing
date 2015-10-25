@@ -61,7 +61,6 @@ class EventSourcingEventDispatcher implements EventDispatcher
         }
     }
 
-
     public function addListener($name, $listener)
     {
         if ($listener instanceof Listener) {
