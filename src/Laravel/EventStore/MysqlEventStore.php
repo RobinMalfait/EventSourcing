@@ -1,9 +1,9 @@
 <?php namespace EventSourcing\Laravel\EventStore;
 
 use Carbon\Carbon;
-use EventSourcing\EventDispatcher\EventDispatcher;
 use EventSourcing\EventStore\EventStore;
 use EventSourcing\Exceptions\NoEventsFoundException;
+use EventSourcing\Laravel\Queue\QueueListener;
 use EventSourcing\Serialization\Deserializer;
 use EventSourcing\Serialization\Serializer;
 use Illuminate\Contracts\Foundation\Application;
@@ -18,20 +18,14 @@ final class MysqlEventStore implements EventStore
     protected $db;
 
     /**
-     * @var EventDispatcher
-     */
-    protected $dispatcher;
-
-    /**
      * @var Log
      */
     protected $log;
 
-    public function __construct(Application $app, EventDispatcher $dispatcher)
+    public function __construct(Application $app)
     {
         $this->log = $app->make(Log::class);
         $this->db = $app->make('db')->connection('eventstore');
-        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -57,10 +51,7 @@ final class MysqlEventStore implements EventStore
                 'recorded_on' => $recordedOn
             ];
 
-            Queue::push(function() use ($this, $event, $metadata)
-            {
-                $this->dispatcher->dispatch($event, $metadata);
-            });
+            Queue::push(QueueListener::class, compact('event', 'metadata'));
         }
     }
 
