@@ -22,13 +22,13 @@ class QueueListener implements ShouldQueue
     }
 
     /**
-     * @param $data
+     * @param $transferObject
      */
-    public function fire($job, $data)
+    public function fire($job, $transferObject)
     {
-        $data = $this->deserialize(json_decode($data, true));
+        $transferObject = $this->deserialize(json_decode($transferObject, true));
 
-        $this->dispatcher->dispatch($data->getEvent(), $data->getMetadata());
+        $this->dispatcher->dispatch($transferObject->getEvent(), $transferObject->getMetadata());
 
         $job->delete();
     }

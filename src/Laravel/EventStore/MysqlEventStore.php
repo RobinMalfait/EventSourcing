@@ -49,16 +49,14 @@ final class MysqlEventStore implements EventStore
             try {
                 $this->storeEvent($uuid, $version, json_encode($this->serialize($event)), $recordedOn, $type);
 
-                $metadata = [
-                    'uuid' => $uuid,
-                    'version' => $version,
-                    'type' => $type,
-                    'recorded_on' => $recordedOn
-                ];
-
                 $obj = new TransferObject(
                     $event,
-                    new MetaData($metadata)
+                    new MetaData(
+                        $uuid,
+                        $version,
+                        $type,
+                        $recordedOn
+                    )
                 );
 
                 Queue::push(QueueListener::class, json_encode($this->serialize($obj)));

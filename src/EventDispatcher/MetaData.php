@@ -2,11 +2,20 @@
 
 class MetaData
 {
-    private $data;
+    private $uuid;
 
-    public function __construct($data)
+    private $version;
+
+    private $type;
+
+    private $recordedOn;
+
+    public function __construct($uuid, $version, $type, $recordedOn)
     {
-        $this->data = $data;
+        $this->uuid = $uuid;
+        $this->version = $version;
+        $this->type = $type;
+        $this->recordedOn = $recordedOn;
     }
 
     /**
@@ -14,6 +23,11 @@ class MetaData
      */
     public function getData()
     {
-        return $this->data;
+        return [
+            'uuid' => $this->uuid,
+            'version' => $this->version,
+            'type' => $this->type,
+            'recorded_on' => $this->recordedOn
+        ];
     }
 }
