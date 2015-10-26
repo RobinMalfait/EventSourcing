@@ -1,8 +1,11 @@
 <?php namespace EventSourcing\Laravel\Queue;
 
 use EventSourcing\EventDispatcher\EventDispatcher;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use stdClass;
 
-class QueueListener {
+class QueueListener implements ShouldQueue
+{
 
     protected  $dispatcher;
 
@@ -11,11 +14,9 @@ class QueueListener {
         $this->dispatcher = $dispatcher;
     }
 
-    public function handle($job, $data)
+    public function handle(stdClass $data)
     {
-        $this->dispatcher->dispatch($data['event'], $data['metadata']);
-
-        $job->delete();
+        $this->dispatcher->dispatch($data->event, $data->metadata);
     }
 
 

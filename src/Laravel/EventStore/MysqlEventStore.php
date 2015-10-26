@@ -51,7 +51,11 @@ final class MysqlEventStore implements EventStore
                 'recorded_on' => $recordedOn
             ];
 
-            Queue::push(QueueListener::class, compact('event', 'metadata'));
+            $obj = new \stdClass();
+            $obj->event = $event;
+            $obj->metadata = $metadata;
+
+            Queue::push(QueueListener::class, $obj);
         }
     }
 
