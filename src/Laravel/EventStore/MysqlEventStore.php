@@ -1,6 +1,8 @@
 <?php namespace EventSourcing\Laravel\EventStore;
 
 use Carbon\Carbon;
+use EventSourcing\EventDispatcher\MetaData;
+use EventSourcing\EventDispatcher\TransferObject;
 use EventSourcing\EventStore\EventStore;
 use EventSourcing\Exceptions\NoEventsFoundException;
 use EventSourcing\Laravel\Queue\QueueListener;
@@ -17,6 +19,8 @@ final class MysqlEventStore implements EventStore
 
     protected $db;
 
+    private $table = "eventstore";
+
     /**
      * @var Log
      */
@@ -25,7 +29,7 @@ final class MysqlEventStore implements EventStore
     public function __construct(Application $app)
     {
         $this->log = $app->make(Log::class);
-        $this->db = $app->make('db')->connection('eventstore');
+        $this->db = $app->make('db')->connection($this->table);
     }
 
     /**
@@ -42,20 +46,25 @@ final class MysqlEventStore implements EventStore
             $type = strtolower(str_replace("\\", ".", get_class($event)));
             $recordedOn = Carbon::now();
 
-            $this->storeEvent($uuid, $version, json_encode($this->serialize($event)), $recordedOn, $type);
+            try {
+                $this->storeEvent($uuid, $version, json_encode($this->serialize($event)), $recordedOn, $type);
 
-            $metadata = [
-                'uuid' => $uuid,
-                'version' => $version,
-                'type' => $type,
-                'recorded_on' => $recordedOn
-            ];
+                $metadata = [
+                    'uuid' => $uuid,
+                    'version' => $version,
+                    'type' => $type,
+                    'recorded_on' => $recordedOn
+                ];
 
-            $obj = new \stdClass();
-            $obj->event = $event;
-            $obj->metadata = $metadata;
+                $obj = new TransferObject(
+                    $event,
+                    new MetaData($metadata)
+                );
 
-            Queue::push(QueueListener::class, json_encode($this->serialize($obj)));
+                Queue::push(QueueListener::class, json_encode($this->serialize($obj)));
+            } catch(QueryException $ex) {
+                $this->log->error("An error has occurred while storing an event [" . $ex->getMessage() . "]", $ex->getTrace());
+            }
         }
     }
 
@@ -80,7 +89,7 @@ final class MysqlEventStore implements EventStore
         $this->db->beginTransaction();
 
         try {
-            $this->db->table('eventstore')->insert([
+            $this->db->table($this->table)->insert([
                 'uuid' => $uuid,
                 'version' => $version,
                 'payload' => $payload,
@@ -91,7 +100,7 @@ final class MysqlEventStore implements EventStore
             $this->db->commit();
         } catch (QueryException $ex) {
             $this->db->rollBack();
-            $this->log->error("An error has occurred while storing an event [" . $ex->getMessage() . "]", $ex->getTrace());
+            throw $ex;
         }
     }
 
@@ -102,7 +111,7 @@ final class MysqlEventStore implements EventStore
      */
     private function searchEventsFor($uuid)
     {
-        $rows = $this->db->table('eventstore')
+        $rows = $this->db->table($this->table)
                 ->select(['uuid', 'version', 'payload', 'type', 'recorded_on'])
                 ->where('uuid', $uuid)
                 ->orderBy('version', 'asc')

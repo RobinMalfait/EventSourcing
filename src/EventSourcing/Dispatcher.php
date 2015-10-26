@@ -1,12 +1,14 @@
 <?php namespace EventSourcing\EventSourcing;
 
+use Illuminate\Contracts\Foundation\Application;
+
 trait Dispatcher
 {
     private $app;
 
-    public function __construct()
+    public function __construct(Application $app)
     {
-        $this->app = app();
+        $this->app = $app;
     }
 
     public function dispatch($command)
