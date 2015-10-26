@@ -55,7 +55,7 @@ final class MysqlEventStore implements EventStore
                         $uuid,
                         $version,
                         $type,
-                        $recordedOn
+                        (string) $recordedOn
                     )
                 );
 
