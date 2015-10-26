@@ -55,7 +55,7 @@ final class MysqlEventStore implements EventStore
             $obj->event = $event;
             $obj->metadata = $metadata;
 
-            Queue::push(QueueListener::class, $obj);
+            Queue::push(QueueListener::class, json_encode($this->serialize($obj)));
         }
     }
 

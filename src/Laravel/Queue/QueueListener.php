@@ -1,11 +1,12 @@
 <?php namespace EventSourcing\Laravel\Queue;
 
 use EventSourcing\EventDispatcher\EventDispatcher;
+use EventSourcing\Serialization\Deserializer;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use stdClass;
 
 class QueueListener implements ShouldQueue
 {
+    use Deserializer;
 
     protected  $dispatcher;
 
@@ -14,8 +15,10 @@ class QueueListener implements ShouldQueue
         $this->dispatcher = $dispatcher;
     }
 
-    public function handle(stdClass $data)
+    public function handle($data)
     {
+        $data = $this->deserialize(json_decode($data, true));
+
         $this->dispatcher->dispatch($data->event, $data->metadata);
     }
 
