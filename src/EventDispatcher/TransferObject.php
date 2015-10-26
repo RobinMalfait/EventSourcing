@@ -2,7 +2,7 @@
 
 use EventSourcing\Domain\DomainEvent;
 
-final class TransferObject
+class TransferObject
 {
     /**
      * @var DomainEvent
@@ -18,7 +18,7 @@ final class TransferObject
      * @param DomainEvent $event
      * @param MetaData $metadata
      */
-    public function __constructor(DomainEvent $event, MetaData $metadata)
+    public function __construct(DomainEvent $event, MetaData $metadata)
     {
         $this->event = $event;
         $this->metadata = $metadata;

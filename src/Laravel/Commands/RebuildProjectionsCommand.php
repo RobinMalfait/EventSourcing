@@ -47,19 +47,19 @@ class RebuildProjectionsCommand extends Command
     {
         $start = microtime(true);
 
-        $this->action("Application is going down", function() {
+        $this->action("Application is going down", function () {
             $this->call("down");
         });
 
-        $this->action("Reset all migrations", function() {
+        $this->action("Reset all migrations", function () {
             $this->call("migrate:reset");
         });
 
-        $this->action("Migrate all migrations", function() {
+        $this->action("Migrate all migrations", function () {
             $this->call("migrate");
         });
 
-        $this->action("Loading events from EventStore", function() {
+        $this->action("Loading events from EventStore", function () {
             $events = $this->getAllEvents();
 
             $this->output->progressStart(count($events));
@@ -80,7 +80,7 @@ class RebuildProjectionsCommand extends Command
             $this->output->progressFinish();
         });
 
-        $this->action("Application is going back up", function() {
+        $this->action("Application is going back up", function () {
             $this->call("up");
         });
 
@@ -110,7 +110,7 @@ class RebuildProjectionsCommand extends Command
         $this->steps++;
     }
 
-    private function action($title, Callable $method)
+    private function action($title, callable $method)
     {
         $this->printHeader($title);
         $start = microtime(true);

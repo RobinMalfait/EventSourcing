@@ -1,9 +1,14 @@
 <?php namespace EventSourcing\Test\Serialization;
 
+use Carbon\Carbon;
+use EventSourcing\Domain\DomainEvent;
+use EventSourcing\EventDispatcher\MetaData;
+use EventSourcing\EventDispatcher\TransferObject;
 use EventSourcing\Serialization\Deserializer;
 use EventSourcing\Serialization\Serializer;
+use EventSourcing\Test\TestCase;
 
-class SerializationTest
+class SerializationTest extends TestCase
 {
     use Serializer, Deserializer;
 
@@ -12,9 +17,11 @@ class SerializationTest
      */
     public function it_can_serialize_and_deserialize()
     {
-        $serialized = $this->serialize(new SerializationExampleClass(new D(new E())));
+        $data = new SerializationExampleClass(new D(new E()));
 
-        $this->assertEquals($serialized, $this->deserialize($serialized));
+        $serialized = $this->serialize($data);
+
+        $this->assertEquals($data, $this->deserialize($serialized));
     }
 }
 
@@ -49,4 +56,9 @@ class D
     {
         $this->recursive = $e;
     }
+}
+
+class E
+{
+    private $id = 321;
 }

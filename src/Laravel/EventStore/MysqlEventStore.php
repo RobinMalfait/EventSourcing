@@ -62,7 +62,7 @@ final class MysqlEventStore implements EventStore
                 );
 
                 Queue::push(QueueListener::class, json_encode($this->serialize($obj)));
-            } catch(QueryException $ex) {
+            } catch (QueryException $ex) {
                 $this->log->error("An error has occurred while storing an event [" . $ex->getMessage() . "]", $ex->getTrace());
             }
         }

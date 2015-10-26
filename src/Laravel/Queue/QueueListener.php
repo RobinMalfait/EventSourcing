@@ -11,7 +11,7 @@ class QueueListener implements ShouldQueue
     /**
      * @var EventDispatcher
      */
-    protected  $dispatcher;
+    protected $dispatcher;
 
     /**
      * @param EventDispatcher $dispatcher
