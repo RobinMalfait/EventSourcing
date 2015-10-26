@@ -24,10 +24,12 @@ class QueueListener implements ShouldQueue
     /**
      * @param $data
      */
-    public function handle($data)
+    public function fire($job, $data)
     {
         $data = $this->deserialize(json_decode($data, true));
 
         $this->dispatcher->dispatch($data->getEvent(), $data->getMetadata());
+
+        $job->delete();
     }
 }
