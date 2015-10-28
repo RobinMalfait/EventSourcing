@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use EventSourcing\EventDispatcher\EventDispatcher;
 use EventSourcing\EventStore\EventStore;
 use EventSourcing\Serialization\Deserializer;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Application;
 use Illuminate\Contracts\Config\Repository as Config;
@@ -206,7 +207,12 @@ class RebuildProjectionsCommand extends Command
         $options = [];
 
         foreach ($items as $item) {
-            list($key, $value) = explode('=', $item);
+            try {
+                list($key, $value) = explode('=', $item);
+            } catch (Exception $e) {
+                $key = $item;
+                $value = true; // Boolean
+            }
 
             $options[] = [$key => $value];
         }

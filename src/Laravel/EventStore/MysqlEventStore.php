@@ -18,6 +18,11 @@ final class MysqlEventStore extends EventStore
     protected $db;
 
     /**
+     * @var string
+     */
+    private $table;
+
+    /**
      * @param Application $app
      */
     public function __construct(Application $app)
@@ -25,6 +30,7 @@ final class MysqlEventStore extends EventStore
         parent::__construct($app);
 
         $this->db = $app->make('db')->connection($this->getConnectionName());
+        $this->table = $this->getTableName();
     }
 
     /**
@@ -34,7 +40,7 @@ final class MysqlEventStore extends EventStore
      */
     public function getEventsFor($id)
     {
-        $rows = $this->db->table($this->getTableName())
+        $rows = $this->db->table($this->table)
             ->select(['uuid', 'version', 'payload', 'type', 'recorded_on'])
             ->where('uuid', $id)
             ->orderBy('version', 'asc')
@@ -74,10 +80,10 @@ final class MysqlEventStore extends EventStore
         $this->db->beginTransaction();
 
         try {
-            $this->db->table($this->getTableName())->insert([
+            $this->db->table($this->table)->insert([
                 'uuid' => $metadata['uuid'],
                 'version' => $metadata['version'],
-                'payload' => json_encode($this->serialize($metadata['event'])),
+                'payload' => json_encode($this->serialize($transferObject->getEvent())),
                 'recorded_on' => $metadata['recorded_on'],
                 'type' => $metadata['type']
             ]);
