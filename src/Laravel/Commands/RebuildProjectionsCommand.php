@@ -164,7 +164,7 @@ class RebuildProjectionsCommand extends Command
     private function runPreRebuildCommands()
     {
         $this->runListOfCommands(
-            $this->config->get('event_sourcing.pre_rebuild')
+            $this->config->get('event_sourcing.pre_rebuild', [])
         );
     }
 
@@ -174,7 +174,7 @@ class RebuildProjectionsCommand extends Command
     private function runPostRebuildCommands()
     {
         $this->runListOfCommands(
-            $this->config->get('event_sourcing.post_rebuild')
+            $this->config->get('event_sourcing.post_rebuild', [])
         );
     }
 
