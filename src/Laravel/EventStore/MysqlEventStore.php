@@ -29,7 +29,7 @@ final class MysqlEventStore implements EventStore
     /**
      * @var string
      */
-    private $table = "eventstore";
+    private $table;
 
     /**
      * @var Log
@@ -47,6 +47,7 @@ final class MysqlEventStore implements EventStore
         $this->config = $app->make(Config::class);
         $this->db = $app->make('db')->connection($this->table);
         $this->dispatcher = $app->make(EventDispatcher::class);
+        $this->table = $this->config->get('event_sourcing.table_name', 'eventstore');
     }
 
     /**
