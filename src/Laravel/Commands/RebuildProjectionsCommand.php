@@ -4,17 +4,27 @@ use Carbon\Carbon;
 use EventSourcing\EventDispatcher\EventDispatcher;
 use EventSourcing\Serialization\Deserializer;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Console\Application;
+use Illuminate\Contracts\Config\Repository as Config;
 
 class RebuildProjectionsCommand extends Command
 {
     use Deserializer;
 
     /**
-     * @var
+     * @var Application
      */
     private $app;
 
+    /**
+     * @var int
+     */
     private $steps = 1;
+
+    /**
+     * @var Config
+     */
+    private $config;
 
     /**
      * The name and signature of the console command.
@@ -35,6 +45,7 @@ class RebuildProjectionsCommand extends Command
         parent::__construct();
 
         $this->app = $app;
+        $this->config = $this->app->make('config');
         $this->dispatcher = $this->app->make(EventDispatcher::class);
     }
 
@@ -47,17 +58,7 @@ class RebuildProjectionsCommand extends Command
     {
         $start = microtime(true);
 
-        $this->action("Application is going down", function () {
-            $this->call("down");
-        });
-
-        $this->action("Reset all migrations", function () {
-            $this->call("migrate:reset");
-        });
-
-        $this->action("Migrate all migrations", function () {
-            $this->call("migrate");
-        });
+        $this->runPreRebuildCommands();
 
         $this->action("Loading events from EventStore", function () {
             $events = $this->getAllEvents();
@@ -80,9 +81,7 @@ class RebuildProjectionsCommand extends Command
             $this->output->progressFinish();
         });
 
-        $this->action("Application is going back up", function () {
-            $this->call("up");
-        });
+        $this->runPostRebuildCommands();
 
         $this->printHeader("Statistics");
         $end = microtime(true);
@@ -136,5 +135,29 @@ class RebuildProjectionsCommand extends Command
         }
 
         return round($time, 1) . $symbol;
+    }
+
+    private function runPreRebuildCommands()
+    {
+        foreach ($this->config->get('event_sourcing.pre_rebuild') as $command => $title) {
+            $this->action(
+                $title,
+                function () use ($command) {
+                    $this->call($command);
+                }
+            );
+        }
+    }
+
+    private function runPostRebuildCommands()
+    {
+        foreach ($this->config->get('event_sourcing.post_rebuild') as $command => $title) {
+            $this->action(
+                $title,
+                function () use ($command) {
+                    $this->call($command);
+                }
+            );
+        }
     }
 }

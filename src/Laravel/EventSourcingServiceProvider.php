@@ -41,7 +41,19 @@ class EventSourcingServiceProvider extends ServiceProvider
         $this->app->singleton(EventStoreRepository::class, EventSourcingRepository::class);
 
         $this->registerArtisanCommands();
+
+        $this->mergeConfigFrom(
+            __DIR__.'/Config/event_sourcing.php', 'event_sourcing'
+        );
     }
+
+    public function boot()
+    {
+        $this->publishes([
+            __DIR__.'/Config/event_sourcing.php' => config_path('event_sourcing.php'),
+        ]);
+    }
+
 
     private function registerArtisanCommands()
     {
