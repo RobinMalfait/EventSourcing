@@ -79,9 +79,8 @@ final class MysqlEventStore implements EventStore
                 if ($this->config->get('event_sourcing.autoqueue', false)) {
                     Queue::push(QueueDispatcherListener::class, json_encode($this->serialize($transferObject)));
                 } else {
-                    $this->dispatcher->dispatch($transferObject->getEvent(), $transferObject->getMetadata()->getData());
+                    $this->dispatcher->dispatch($transferObject->getEvent(), $transferObject->getMetadata());
                 }
-
             } catch (QueryException $ex) {
                 $this->log->error("An error has occurred while storing an event [" . $ex->getMessage() . "]", $ex->getTrace());
             }

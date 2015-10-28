@@ -22,6 +22,7 @@ class QueueDispatcherListener implements ShouldQueue
     }
 
     /**
+     * @param $job
      * @param $transferObject
      */
     public function fire($job, $transferObject)

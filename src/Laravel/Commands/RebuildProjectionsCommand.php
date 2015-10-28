@@ -157,10 +157,30 @@ class RebuildProjectionsCommand extends Command
             $this->action(
                 $title,
                 function () use ($command) {
-                    $this->call($command);
+                    list($command, $options) = $this->parseCommand($command);
+                    $this->call($command, $options);
                 }
             );
         }
     }
 
+    /**
+     * @param $command
+     * @return array
+     */
+    private function parseCommand($command)
+    {
+        $items = collect(explode(" ", $command));
+        $command = $items->first();
+
+        $options = [];
+
+        foreach($items as $item) {
+            list($key, $value) = explode('=', $item);
+
+            $options[] = [$key => $value];
+        }
+
+        return [$command, $options];
+    }
 }

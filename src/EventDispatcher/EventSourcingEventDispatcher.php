@@ -1,59 +1,65 @@
 <?php namespace EventSourcing\EventDispatcher;
 
+use Illuminate\Contracts\Queue\ShouldQueue;
+
 class EventSourcingEventDispatcher implements EventDispatcher
 {
+    /**
+     * @var array
+     */
     private $listeners = [];
 
+    /**
+     * @var array
+     */
     private $projectors = [];
 
+    /**
+     * @param $event
+     * @param array $metadata
+     */
     public function dispatch($event, $metadata = [])
     {
-        if (is_array($event)) {
-            foreach ($event as $e) {
-                $this->dispatch($e, $metadata);
-            }
-
-            return;
-        }
-
         $this->project($event, $metadata);
 
         foreach ($this->getListeners(get_class($event)) as $listener) {
-            $listener->handle($event, $metadata);
+            $this->handle($listener, $event, $metadata);
         }
     }
 
+    /**
+     * @param $event
+     * @param array $metadata
+     */
     public function project($event, $metadata = [])
     {
-        if (is_array($event)) {
-            foreach ($event as $e) {
-                $this->dispatch($e);
-            }
-
-            return;
-        }
-
         foreach ($this->projectors as $projector) {
-            $projector->handle($event, $metadata);
+            $this->handle($projector, $event, $metadata);
         }
 
         foreach ($this->getListeners(get_class($event)) as $listener) {
             if ($listener instanceof Projection) {
-                $listener->handle($event, $metadata);
+                $this->handle($listener, $event, $metadata);
             }
         }
     }
 
+    /**
+     * @param $projector
+     */
     public function addProjector($projector)
     {
         if (is_string($projector)) {
-            $this->addProjector(app($projector));
+            $this->addProjector(app()->make($projector));
             return;
         }
 
         $this->projectors[] = $projector;
     }
 
+    /**
+     * @param $projectors
+     */
     public function addProjectors($projectors)
     {
         foreach ($projectors as $projector) {
@@ -61,15 +67,23 @@ class EventSourcingEventDispatcher implements EventDispatcher
         }
     }
 
+    /**
+     * @param $name
+     * @param $listener
+     */
     public function addListener($name, $listener)
     {
         if ($listener instanceof Listener) {
             $this->listeners[$name][] = $listener;
         } elseif (is_string($listener)) {
-            $this->addListener($name, app($listener));
+            $this->addListener($name, app()->make($listener));
         }
     }
 
+    /**
+     * @param $name
+     * @param $listeners
+     */
     public function addListeners($name, $listeners)
     {
         foreach ($listeners as $listener) {
@@ -77,6 +91,10 @@ class EventSourcingEventDispatcher implements EventDispatcher
         }
     }
 
+    /**
+     * @param $name
+     * @return array
+     */
     private function getListeners($name)
     {
         if (! $this->hasListeners($name)) {
@@ -86,8 +104,29 @@ class EventSourcingEventDispatcher implements EventDispatcher
         return $this->listeners[$name];
     }
 
+    /**
+     * @param $name
+     * @return bool
+     */
     private function hasListeners($name)
     {
         return isset($this->listeners[$name]);
+    }
+
+    /**
+     * @param $listener
+     * @param $event
+     * @param $metadata
+     */
+    private function handle($listener, $event, $metadata)
+    {
+        if ($listener instanceof ShouldQueue) {
+            Queue::push(function() use ($listener, $event, $metadata)
+            {
+                $listener->handle($event, $metadata);
+            });
+        } else {
+            $listener->handle($event, $metadata);
+        }
     }
 }

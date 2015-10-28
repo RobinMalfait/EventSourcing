@@ -1,8 +1,9 @@
 <?php namespace EventSourcing\EventDispatcher;
 
 use EventSourcing\Domain\DomainEvent;
+use Illuminate\Contracts\Support\Arrayable;
 
-class TransferObject
+class TransferObject implements Arrayable
 {
     /**
      * @var DomainEvent
@@ -33,9 +34,19 @@ class TransferObject
     }
 
     /**
-     * @return MetaData
+     * @return array
      */
     public function getMetadata()
+    {
+        return $this->metadata->getData();
+    }
+
+    /**
+     * Get the instance as an array.
+     *
+     * @return array
+     */
+    public function toArray()
     {
         return $this->metadata->getData();
     }
