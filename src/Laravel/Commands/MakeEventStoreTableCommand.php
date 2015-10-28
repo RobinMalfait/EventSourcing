@@ -2,6 +2,7 @@
 
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Database\Schema\Blueprint;
 
 class MakeEventStoreTableCommand extends Command
@@ -25,11 +26,25 @@ class MakeEventStoreTableCommand extends Command
      */
     protected $description = 'Make the EventStore table.';
 
+    /**
+     * @var string
+     */
+    protected $table;
+
+    /**
+     * @var string
+     */
+    protected $connection;
+
     public function __construct($app)
     {
         parent::__construct();
 
+        $config = $app->make(Config::class);
+
         $this->app = $app;
+        $this->table = $config->get('event_sourcing.table_name', 'eventstore');
+        $this->connection = $config->get('event_sourcing.connection_name', 'eventstore');
     }
 
     /**
@@ -41,7 +56,7 @@ class MakeEventStoreTableCommand extends Command
     {
         $success = false;
         try {
-            $this->app['db']->connection('eventstore')->getSchemaBuilder()->create('eventstore', function (Blueprint $table) {
+            $this->app['db']->connection($this->connection)->getSchemaBuilder()->create($this->table, function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('uuid', 50);
 
@@ -56,10 +71,10 @@ class MakeEventStoreTableCommand extends Command
         } catch (Exception $e) {
             $this->error("This error has occurred: " . $e->getMessage());
 
-            $this->info("Make sure that you have an `eventstore` database connection." . PHP_EOL . "For example:");
+            $this->info("Make sure that you have an `" . $this->connection . "` database connection." . PHP_EOL . "For example:");
 
             $data = [
-                "'eventstore' => [",
+                "'" . $this->connection . "' => [",
                 "\t'driver'    => 'mysql',",
                 "\t'host'      => env('EVENTSTORE_DB_HOST', 'localhost'),",
                 "\t'database'  => env('EVENTSTORE_DB_DATABASE', 'forge'),",
