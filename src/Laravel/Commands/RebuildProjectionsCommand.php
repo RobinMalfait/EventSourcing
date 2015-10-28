@@ -139,7 +139,21 @@ class RebuildProjectionsCommand extends Command
 
     private function runPreRebuildCommands()
     {
-        foreach ($this->config->get('event_sourcing.pre_rebuild') as $command => $title) {
+        $this->runListOfCommands(
+            $this->config->get('event_sourcing.pre_rebuild')
+        );
+    }
+
+    private function runPostRebuildCommands()
+    {
+        $this->runListOfCommands(
+            $this->config->get('event_sourcing.post_rebuild')
+        );
+    }
+
+    private function runListOfCommands($commands)
+    {
+        foreach ($commands as $command => $title) {
             $this->action(
                 $title,
                 function () use ($command) {
@@ -149,15 +163,4 @@ class RebuildProjectionsCommand extends Command
         }
     }
 
-    private function runPostRebuildCommands()
-    {
-        foreach ($this->config->get('event_sourcing.post_rebuild') as $command => $title) {
-            $this->action(
-                $title,
-                function () use ($command) {
-                    $this->call($command);
-                }
-            );
-        }
-    }
 }
