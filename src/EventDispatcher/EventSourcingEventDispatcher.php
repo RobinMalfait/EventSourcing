@@ -121,8 +121,7 @@ class EventSourcingEventDispatcher implements EventDispatcher
     private function handle($listener, $event, $metadata)
     {
         if ($listener instanceof ShouldQueue) {
-            Queue::push(function() use ($listener, $event, $metadata)
-            {
+            Queue::push(function () use ($listener, $event, $metadata) {
                 $listener->handle($event, $metadata);
             });
         } else {

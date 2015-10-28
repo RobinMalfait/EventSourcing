@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use EventSourcing\EventDispatcher\EventDispatcher;
+use EventSourcing\EventStore\EventStore;
 use EventSourcing\Serialization\Deserializer;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Application;
@@ -27,6 +28,11 @@ class RebuildProjectionsCommand extends Command
     private $config;
 
     /**
+     * @var EventStore
+     */
+    private $eventstore;
+
+    /**
      * The name and signature of the console command.
      *
      * @var string
@@ -40,13 +46,17 @@ class RebuildProjectionsCommand extends Command
      */
     protected $description = 'Rebuild all the projections by cleaning migrations and replaying events.';
 
+    /**
+     * @param $app
+     */
     public function __construct($app)
     {
         parent::__construct();
 
         $this->app = $app;
-        $this->config = $this->app->make('config');
+        $this->config = $this->app->make(Config::class);
         $this->dispatcher = $this->app->make(EventDispatcher::class);
+        $this->eventstore = $this->app->make(EventStore::class);
     }
 
     /**
@@ -89,15 +99,18 @@ class RebuildProjectionsCommand extends Command
         $this->info("Total Excecution time: <comment>" . $executionTime . "</comment>");
     }
 
+    /**
+     * @return mixed
+     */
     private function getAllEvents()
     {
-        return $this->app['db']
-            ->connection('eventstore')
-            ->table('eventstore')
-            ->select(['uuid', 'version', 'payload', 'type', 'recorded_on'])
-            ->get();
+        return $this->eventstore->getAllEvents();
     }
 
+    /**
+     * @param $string
+     * @param string $fillWith
+     */
     private function printHeader($string, $fillWith = "=")
     {
         $comment = collect(["<comment>", "</comment>"]);
@@ -109,6 +122,10 @@ class RebuildProjectionsCommand extends Command
         $this->steps++;
     }
 
+    /**
+     * @param $title
+     * @param callable $method
+     */
     private function action($title, callable $method)
     {
         $this->printHeader($title);
@@ -120,6 +137,10 @@ class RebuildProjectionsCommand extends Command
         $this->info("Excecution time: <comment>" . $executionTime . "</comment>");
     }
 
+    /**
+     * @param $timeInSeconds
+     * @return string
+     */
     private function calcExecutionTime($timeInSeconds)
     {
         $time = $timeInSeconds;
@@ -137,6 +158,9 @@ class RebuildProjectionsCommand extends Command
         return round($time, 1) . $symbol;
     }
 
+    /**
+     *
+     */
     private function runPreRebuildCommands()
     {
         $this->runListOfCommands(
@@ -144,6 +168,9 @@ class RebuildProjectionsCommand extends Command
         );
     }
 
+    /**
+     *
+     */
     private function runPostRebuildCommands()
     {
         $this->runListOfCommands(
@@ -151,6 +178,9 @@ class RebuildProjectionsCommand extends Command
         );
     }
 
+    /**
+     * @param $commands
+     */
     private function runListOfCommands($commands)
     {
         foreach ($commands as $command => $title) {
@@ -175,7 +205,7 @@ class RebuildProjectionsCommand extends Command
 
         $options = [];
 
-        foreach($items as $item) {
+        foreach ($items as $item) {
             list($key, $value) = explode('=', $item);
 
             $options[] = [$key => $value];
