@@ -22,6 +22,21 @@ $ composer require robin-malfait/event-sourcing
 
 Register the service provider
 
+``` php
+'providers' => [
+    ...
+    \EventSourcing\Laravel\EventSourcingServiceProvider::class,
+]
+```
+
+Publish the configuration file
+
+``` php
+php artisan vendor:publish --provider="EventSourcing\Laravel\EventSourcingServiceProvider"
+```
+
+You can now tweak some configurations
+
 ## Change log
 
 Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
