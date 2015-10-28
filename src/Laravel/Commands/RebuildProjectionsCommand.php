@@ -171,7 +171,7 @@ class RebuildProjectionsCommand extends Command
     private function parseCommand($command)
     {
         $items = collect(explode(" ", $command));
-        $command = $items->first();
+        $command = $items->shift();
 
         $options = [];
 
