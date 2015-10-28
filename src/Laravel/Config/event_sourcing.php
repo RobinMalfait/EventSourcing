@@ -7,7 +7,10 @@ return [
     | Auto Queue
     |--------------------------------------------------------------------------
     |
-    | Do you want to queue all the dispatches?
+    | Do you want to queue all the listeners?
+    |
+    | When you set this to false, and you want a certain listener to queue
+    | You should implement the Illuminate\Contracts\Queue\ShouldQueue interface
     |
     */
     'autoqueue' => false,

@@ -3,14 +3,16 @@
 use Carbon\Carbon;
 use EventSourcing\EventDispatcher\MetaData;
 use EventSourcing\EventDispatcher\TransferObject;
+use EventSourcing\EventDispatcher\EventDispatcher;
 use EventSourcing\EventStore\EventStore;
 use EventSourcing\Exceptions\NoEventsFoundException;
-use EventSourcing\Laravel\Queue\QueueListener;
+use EventSourcing\Laravel\Queue\QueueDispatcherListener;
 use EventSourcing\Serialization\Deserializer;
 use EventSourcing\Serialization\Serializer;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\QueryException;
 use Illuminate\Contracts\Logging\Log;
+use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Support\Facades\Queue;
 
 final class MysqlEventStore implements EventStore
@@ -19,6 +21,14 @@ final class MysqlEventStore implements EventStore
 
     protected $db;
 
+    /**
+     * @var Config
+     */
+    protected $config;
+
+    /**
+     * @var string
+     */
     private $table = "eventstore";
 
     /**
@@ -26,10 +36,17 @@ final class MysqlEventStore implements EventStore
      */
     protected $log;
 
+    /**
+     * @var EventDispatcher
+     */
+    protected $dispatcher;
+
     public function __construct(Application $app)
     {
         $this->log = $app->make(Log::class);
+        $this->config = $app->make(Config::class);
         $this->db = $app->make('db')->connection($this->table);
+        $this->dispatcher = $app->make(EventDispatcher::class);
     }
 
     /**
@@ -49,7 +66,7 @@ final class MysqlEventStore implements EventStore
             try {
                 $this->storeEvent($uuid, $version, json_encode($this->serialize($event)), $recordedOn, $type);
 
-                $obj = new TransferObject(
+                $transferObject = new TransferObject(
                     $event,
                     new MetaData(
                         $uuid,
@@ -59,7 +76,12 @@ final class MysqlEventStore implements EventStore
                     )
                 );
 
-                Queue::push(QueueListener::class, json_encode($this->serialize($obj)));
+                if ($this->config->get('event_sourcing.autoqueue', false)) {
+                    Queue::push(QueueDispatcherListener::class, json_encode($this->serialize($transferObject)));
+                } else {
+                    $this->dispatcher->dispatch($transferObject->getEvent(), $transferObject->getMetadata()->getData());
+                }
+
             } catch (QueryException $ex) {
                 $this->log->error("An error has occurred while storing an event [" . $ex->getMessage() . "]", $ex->getTrace());
             }

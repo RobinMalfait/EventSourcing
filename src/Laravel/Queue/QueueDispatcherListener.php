@@ -4,7 +4,7 @@ use EventSourcing\EventDispatcher\EventDispatcher;
 use EventSourcing\Serialization\Deserializer;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class QueueListener implements ShouldQueue
+class QueueDispatcherListener implements ShouldQueue
 {
     use Deserializer;
 
