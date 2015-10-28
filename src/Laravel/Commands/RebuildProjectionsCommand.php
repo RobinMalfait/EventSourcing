@@ -214,7 +214,7 @@ class RebuildProjectionsCommand extends Command
                 $value = true; // Boolean
             }
 
-            $options[] = [$key => $value];
+            $options[$key] = $value;
         }
 
         return [$command, $options];
