@@ -44,6 +44,9 @@ return [
     | Start the rebuild of your projections from the event store
     |
     | The convention is 'task' => 'title'
+    | If you have options you can write the 'task' like
+    |
+    | E.x.: 'mail example@example.com --queued=true'
     */
     'pre_rebuild' => [
         'down' => 'Application is going down',
@@ -60,6 +63,9 @@ return [
     | did the rebuild of your projections from the event store
     |
     | The convention is 'task' => 'title'
+    | If you have options you can write the 'task' like
+    |
+    | E.x.: 'mail example@example.com --queued=true'
     */
     'post_rebuild' => [
         'up' => 'Application is going back up'
