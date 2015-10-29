@@ -18,6 +18,16 @@ class MetaData
         $this->recordedOn = $recordedOn;
     }
 
+    public static function fromArray(array $data)
+    {
+        return new static(
+            $data['uuid'],
+            $data['version'],
+            $data['type'],
+            $data['recordedOn']
+        );
+    }
+
     /**
      * @return array
      */

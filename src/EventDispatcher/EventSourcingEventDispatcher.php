@@ -128,7 +128,7 @@ class EventSourcingEventDispatcher implements EventDispatcher
         if ($listener instanceof ShouldQueue) {
             Queue::push(QueueListenerExecuter::class, json_encode($this->serialize([
                 'listener' => get_class($listener),
-                'transferObject' => new TransferObject($event, $metadata)
+                'transferObject' => new TransferObject($event, MetaData::fromArray($metadata))
             ])));
         } else {
             $listener->handle($event, $metadata);
