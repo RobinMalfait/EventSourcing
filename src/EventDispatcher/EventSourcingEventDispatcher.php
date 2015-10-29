@@ -20,6 +20,11 @@ class EventSourcingEventDispatcher implements EventDispatcher
     private $projectors = [];
 
     /**
+     * @var bool
+     */
+    private $status = false;
+
+    /**
      * @param $event
      * @param array $metadata
      */
@@ -97,6 +102,15 @@ class EventSourcingEventDispatcher implements EventDispatcher
     }
 
     /**
+     * @param $status
+     */
+    public function rebuildMode($status)
+    {
+        $this->status = $status;
+    }
+
+
+    /**
      * @param $name
      * @return array
      */
@@ -125,7 +139,7 @@ class EventSourcingEventDispatcher implements EventDispatcher
      */
     private function handle($listener, $event, $metadata)
     {
-        if ($listener instanceof ShouldQueue) {
+        if ( ! $this->status && $listener instanceof ShouldQueue) {
             Queue::push(QueueListenerExecuter::class, [
                 'listener' => get_class($listener),
                 'transferObject' => json_encode($this->serialize(new TransferObject($event, MetaData::fromArray($metadata))))

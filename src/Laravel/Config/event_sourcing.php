@@ -27,6 +27,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Disable Queues On Projections Rebuild
+    |--------------------------------------------------------------------------
+    |
+    | You can put your projections in a queue job, but
+    | When you rebuild your projections, this is slow
+    | With this option you can disable the queue
+    |
+    */
+    'disable_projection_queue' => true,
+
+    /*
+    |--------------------------------------------------------------------------
     | Connection name
     |--------------------------------------------------------------------------
     |

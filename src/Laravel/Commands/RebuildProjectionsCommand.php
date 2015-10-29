@@ -71,6 +71,8 @@ class RebuildProjectionsCommand extends Command
 
         $this->runPreRebuildCommands();
 
+        $this->dispatcher->rebuildMode($this->config->get('event_sourcing.disable_projection_queue', true));
+
         $this->action("Loading events from EventStore", function () {
             $events = $this->getAllEvents();
 
@@ -91,6 +93,8 @@ class RebuildProjectionsCommand extends Command
 
             $this->output->progressFinish();
         });
+
+        $this->dispatcher->rebuildMode(false);
 
         $this->runPostRebuildCommands();
 
