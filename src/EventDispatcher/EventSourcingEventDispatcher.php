@@ -1,9 +1,14 @@
 <?php namespace EventSourcing\EventDispatcher;
 
+use EventSourcing\Laravel\Queue\QueueListenerExecuter;
+use EventSourcing\Serialization\Serializer;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Queue;
 
 class EventSourcingEventDispatcher implements EventDispatcher
 {
+    use Serializer;
+
     /**
      * @var array
      */
@@ -121,9 +126,10 @@ class EventSourcingEventDispatcher implements EventDispatcher
     private function handle($listener, $event, $metadata)
     {
         if ($listener instanceof ShouldQueue) {
-            Queue::push(function () use ($listener, $event, $metadata) {
-                $listener->handle($event, $metadata);
-            });
+            Queue::push(QueueListenerExecuter::class, json_encode($this->serialize([
+                'listener' => get_class($listener),
+                'transferObject' => new TransferObject($event, $metadata)
+            ])));
         } else {
             $listener->handle($event, $metadata);
         }
