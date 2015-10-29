@@ -30,10 +30,8 @@ class QueueListenerExecuter implements ShouldQueue
      */
     public function fire($job, $data)
     {
-        $data = $this->deserialize(json_decode($data, true));
-
         $this->listener = app()->make($data['listener']);
-        $this->transferObject = $data['transferObject'];
+        $this->transferObject = $this->deserialize(json_decode($data['transferObject'], true));
 
         $this->listener->handle(
             $this->transferObject->getEvent(),
