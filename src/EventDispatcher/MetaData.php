@@ -24,7 +24,7 @@ class MetaData
             $data['uuid'],
             $data['version'],
             $data['type'],
-            $data['recordedOn']
+            $data['recorded_on']
         );
     }
 
