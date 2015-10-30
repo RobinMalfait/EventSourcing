@@ -139,7 +139,7 @@ class EventSourcingEventDispatcher implements EventDispatcher
      */
     private function handle($listener, $event, $metadata)
     {
-        if ( ! $this->status && $listener instanceof ShouldQueue) {
+        if (! $this->status && $listener instanceof ShouldQueue) {
             Queue::push(QueueListenerExecuter::class, [
                 'listener' => get_class($listener),
                 'transferObject' => json_encode($this->serialize(new TransferObject($event, MetaData::fromArray($metadata))))

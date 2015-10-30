@@ -67,8 +67,7 @@ class RebuildProjectionsCommand extends Command
      */
     public function handle()
     {
-
-        $this->timeMe(function() {
+        $this->timeMe(function () {
             $this->runPreRebuildCommands();
 
             $this->dispatcher->rebuildMode($this->config->get('event_sourcing.disable_projection_queue', true));
@@ -230,5 +229,4 @@ class RebuildProjectionsCommand extends Command
         $executionTime = $this->calcExecutionTime($end - $start);
         $this->info($message . ": <comment>" . $executionTime . "</comment>");
     }
-
 }
