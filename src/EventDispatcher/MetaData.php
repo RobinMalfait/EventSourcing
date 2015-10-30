@@ -1,5 +1,7 @@
 <?php namespace EventSourcing\EventDispatcher;
 
+use Carbon\Carbon;
+
 class MetaData
 {
     private $uuid;
@@ -24,7 +26,7 @@ class MetaData
             $data['uuid'],
             $data['version'],
             $data['type'],
-            $data['recorded_on']
+            (string) $data['recorded_on']
         );
     }
 
@@ -37,7 +39,7 @@ class MetaData
             'uuid' => $this->uuid,
             'version' => $this->version,
             'type' => $this->type,
-            'recorded_on' => $this->recordedOn
+            'recorded_on' => new Carbon($this->recordedOn)
         ];
     }
 }
