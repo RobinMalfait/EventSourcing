@@ -15,6 +15,11 @@ class EventSourcingEventDispatcher implements EventDispatcher
     private $listeners = [];
 
     /**
+     * @var array
+     */
+    private $projectors = [];
+
+    /**
      * @var bool
      */
     private $status = false;
@@ -38,10 +43,8 @@ class EventSourcingEventDispatcher implements EventDispatcher
      */
     public function project($event, $metadata = [])
     {
-        foreach ($this->getListeners(get_class($event)) as $listener) {
-            if ($listener instanceof Projection) {
-                $this->handle($listener, $event, $metadata);
-            }
+        foreach ($this->getProjectors(get_class($event)) as $projector) {
+            $this->handle($projector, $event, $metadata);
         }
     }
 
@@ -51,8 +54,14 @@ class EventSourcingEventDispatcher implements EventDispatcher
      */
     public function addListener($name, $listener)
     {
-        if ($listener instanceof Listener) {
+        if ($listener instanceof Projection) {
+
+            $this->projectors[$name][] = $listener;
+
+        } elseif ($listener instanceof Listener) {
+
             $this->listeners[$name][] = $listener;
+
         } elseif (is_string($listener)) {
             $this->addListener($name, app()->make($listener));
         }
@@ -93,11 +102,33 @@ class EventSourcingEventDispatcher implements EventDispatcher
 
     /**
      * @param $name
+     * @return array
+     */
+    private function getProjectors($name)
+    {
+        if (! $this->hasProjectors($name)) {
+            return [];
+        }
+
+        return $this->projectors[$name];
+    }
+
+    /**
+     * @param $name
      * @return bool
      */
     private function hasListeners($name)
     {
         return isset($this->listeners[$name]);
+    }
+
+    /**
+     * @param $name
+     * @return bool
+     */
+    private function hasProjectors($name)
+    {
+        return isset($this->projectors[$name]);
     }
 
     /**
