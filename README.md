@@ -35,6 +35,10 @@ Publish the configuration file
 php artisan vendor:publish --provider="EventSourcing\Laravel\EventSourcingServiceProvider"
 ```
 
+The config file looks like this:
+
+[Config File](src/Laravel/Config/event_sourcing.php)
+
 You can now tweak some configurations
 
 ## Change log

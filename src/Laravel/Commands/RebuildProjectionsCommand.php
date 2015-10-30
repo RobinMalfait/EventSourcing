@@ -67,41 +67,39 @@ class RebuildProjectionsCommand extends Command
      */
     public function handle()
     {
-        $start = microtime(true);
 
-        $this->runPreRebuildCommands();
+        $this->timeMe(function() {
+            $this->runPreRebuildCommands();
 
-        $this->dispatcher->rebuildMode($this->config->get('event_sourcing.disable_projection_queue', true));
+            $this->dispatcher->rebuildMode($this->config->get('event_sourcing.disable_projection_queue', true));
 
-        $this->action("Loading events from EventStore", function () {
-            $events = $this->getAllEvents();
+            $this->action("Loading events from EventStore", function () {
+                $events = $this->getAllEvents();
 
-            $this->output->progressStart(count($events));
+                $this->output->progressStart(count($events));
 
-            foreach ($events as $event) {
-                $metadata = [
-                    'uuid' => $event->uuid,
-                    'version' => $event->version,
-                    'type' => $event->type,
-                    'recorded_on' => new Carbon($event->recorded_on)
-                ];
+                foreach ($events as $event) {
+                    $metadata = [
+                        'uuid' => $event->uuid,
+                        'version' => $event->version,
+                        'type' => $event->type,
+                        'recorded_on' => new Carbon($event->recorded_on)
+                    ];
 
-                $event = $this->deserialize(json_decode($event->payload, true));
-                $this->dispatcher->project($event, $metadata);
-                $this->output->progressAdvance();
-            }
+                    $event = $this->deserialize(json_decode($event->payload, true));
+                    $this->dispatcher->project($event, $metadata);
+                    $this->output->progressAdvance();
+                }
 
-            $this->output->progressFinish();
-        });
+                $this->output->progressFinish();
+            });
 
-        $this->dispatcher->rebuildMode(false);
+            $this->dispatcher->rebuildMode(false);
 
-        $this->runPostRebuildCommands();
+            $this->runPostRebuildCommands();
 
-        $this->printHeader("Statistics");
-        $end = microtime(true);
-        $executionTime = $this->calcExecutionTime($end - $start);
-        $this->info("Total Excecution time: <comment>" . $executionTime . "</comment>");
+            $this->printHeader("Statistics");
+        }, "Total Execution Time");
     }
 
     /**
@@ -134,12 +132,7 @@ class RebuildProjectionsCommand extends Command
     private function action($title, callable $method)
     {
         $this->printHeader($title);
-        $start = microtime(true);
-        call_user_func($method);
-        $end = microtime(true);
-
-        $executionTime = $this->calcExecutionTime($end - $start);
-        $this->info("Excecution time: <comment>" . $executionTime . "</comment>");
+        $this->timeMe($method);
     }
 
     /**
@@ -223,4 +216,19 @@ class RebuildProjectionsCommand extends Command
 
         return [$command, $options];
     }
+
+    /**
+     * @param callable $callback
+     * @param string $message
+     */
+    private function timeMe(callable $callback, $message = "Excecution Time")
+    {
+        $start = microtime(true);
+        call_user_func($callback);
+        $end = microtime(true);
+
+        $executionTime = $this->calcExecutionTime($end - $start);
+        $this->info($message . ": <comment>" . $executionTime . "</comment>");
+    }
+
 }
