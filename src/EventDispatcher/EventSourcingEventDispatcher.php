@@ -15,11 +15,6 @@ class EventSourcingEventDispatcher implements EventDispatcher
     private $listeners = [];
 
     /**
-     * @var array
-     */
-    private $projectors = [];
-
-    /**
      * @var bool
      */
     private $status = false;
@@ -43,37 +38,10 @@ class EventSourcingEventDispatcher implements EventDispatcher
      */
     public function project($event, $metadata = [])
     {
-        foreach ($this->projectors as $projector) {
-            $this->handle($projector, $event, $metadata);
-        }
-
         foreach ($this->getListeners(get_class($event)) as $listener) {
             if ($listener instanceof Projection) {
                 $this->handle($listener, $event, $metadata);
             }
-        }
-    }
-
-    /**
-     * @param $projector
-     */
-    public function addProjector($projector)
-    {
-        if (is_string($projector)) {
-            $this->addProjector(app()->make($projector));
-            return;
-        }
-
-        $this->projectors[] = $projector;
-    }
-
-    /**
-     * @param $projectors
-     */
-    public function addProjectors($projectors)
-    {
-        foreach ($projectors as $projector) {
-            $this->addProjector($projector);
         }
     }
 
