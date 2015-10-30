@@ -96,8 +96,6 @@ class RebuildProjectionsCommand extends Command
             $this->dispatcher->rebuildMode(false);
 
             $this->runPostRebuildCommands();
-
-            $this->printHeader("Statistics");
         }, "Total Execution Time");
     }
 
@@ -227,6 +225,6 @@ class RebuildProjectionsCommand extends Command
         $end = microtime(true);
 
         $executionTime = $this->calcExecutionTime($end - $start);
-        $this->info($message . ": <comment>" . $executionTime . "</comment>");
+        $this->info(PHP_EOL . $message . ": <comment>" . $executionTime . "</comment>");
     }
 }
