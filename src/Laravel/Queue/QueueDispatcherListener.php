@@ -1,17 +1,20 @@
 <?php namespace EventSourcing\Laravel\Queue;
 
-use EventSourcing\EventDispatcher\EventDispatcher;
-use EventSourcing\Serialization\Deserializer;
+use EventSourcing\Domain\EventDispatcher;
+use EventSourcing\Serialization\Serializer;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class QueueDispatcherListener implements ShouldQueue
 {
-    use Deserializer;
-
     /**
      * @var EventDispatcher
      */
     protected $dispatcher;
+
+    /**
+     * @var Serializer
+     */
+    protected $serializer;
 
     /**
      * @param EventDispatcher $dispatcher
@@ -27,9 +30,9 @@ class QueueDispatcherListener implements ShouldQueue
      */
     public function fire($job, $transferObject)
     {
-        $transferObject = $this->deserialize(json_decode($transferObject, true));
+        $transferObject = $this->serializer->deserialize(json_decode($transferObject, true));
 
-        $this->dispatcher->dispatch($transferObject->getEvent(), $transferObject->getMetadata());
+        $this->dispatcher->dispatch($transferObject->getEvent(), $transferObject->getMetadata()->serialize());
 
         $job->delete();
     }

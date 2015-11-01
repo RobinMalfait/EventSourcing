@@ -57,4 +57,29 @@ class DomainEventStub implements DomainEvent
     {
         return 123;
     }
+
+    /**
+     * @return array
+     */
+    public function serialize()
+    {
+        // TODO: Implement serialize() method.
+    }
+
+    /**
+     * @param array $data
+     * @return mixed
+     */
+    public static function deserialize(array $data)
+    {
+        // TODO: Implement deserialize() method.
+    }
+
+    /**
+     * @return array
+     */
+    public function getMetaData()
+    {
+        return [];
+    }
 }

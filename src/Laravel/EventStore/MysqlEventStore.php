@@ -10,7 +10,7 @@ use Illuminate\Database\QueryException;
 
 final class MysqlEventStore extends EventStore
 {
-    use Serializer, Deserializer;
+    use Serializable, Deserializer;
 
     /**
      * @var
@@ -23,6 +23,11 @@ final class MysqlEventStore extends EventStore
     private $table;
 
     /**
+     * @var Serializer
+     */
+    private $serializer;
+
+    /**
      * @param Application $app
      */
     public function __construct(Application $app)
@@ -31,6 +36,7 @@ final class MysqlEventStore extends EventStore
 
         $this->db = $app->make('db')->connection($this->getConnectionName());
         $this->table = $this->getTableName();
+        $this->serializer = $app->make(Serializer::class);
     }
 
     /**
@@ -70,32 +76,6 @@ final class MysqlEventStore extends EventStore
     }
 
     /**
-     * @param TransferObject $transferObject
-     * @return mixed
-     */
-    protected function storeEvent(TransferObject $transferObject)
-    {
-        $metadata = $transferObject->getMetadata();
-
-        $this->db->beginTransaction();
-
-        try {
-            $this->db->table($this->table)->insert([
-                'uuid' => $metadata['uuid'],
-                'version' => $metadata['version'],
-                'payload' => json_encode($this->serialize($transferObject->getEvent())),
-                'recorded_on' => $metadata['recorded_on'],
-                'type' => $metadata['type']
-            ]);
-
-            $this->db->commit();
-        } catch (QueryException $ex) {
-            $this->db->rollBack();
-            throw $ex;
-        }
-    }
-
-    /**
      * @return mixed
      */
     private function getTableName()
@@ -109,5 +89,32 @@ final class MysqlEventStore extends EventStore
     private function getConnectionName()
     {
         return $this->config->get('event_sourcing.connection_name', 'eventstore');
+    }
+
+    /**
+     * @param TransferObject $transferObject
+     * @return mixed
+     */
+    protected function storeEvent(TransferObject $transferObject)
+    {
+        $metadata = $transferObject->getMetadata();
+
+        $this->db->beginTransaction();
+
+        try {
+            $this->db->table($this->table)->insert([
+                'uuid' => $metadata['uuid'],
+                'version' => $metadata['version'],
+                'payload' => json_encode($this->serializer->serialize($transferObject->getEvent())),
+                'metadata' => json_encode($this->serializer->serialize($transferObject->getMetadata())),
+                'recorded_on' => $metadata['recorded_on'],
+                'type' => $metadata['type']
+            ]);
+
+            $this->db->commit();
+        } catch (QueryException $ex) {
+            $this->db->rollBack();
+            throw $ex;
+        }
     }
 }

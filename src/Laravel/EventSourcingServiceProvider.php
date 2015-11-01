@@ -1,7 +1,7 @@
 <?php namespace EventSourcing\Laravel;
 
-use EventSourcing\EventDispatcher\EventSourcingEventDispatcher;
-use EventSourcing\EventDispatcher\EventDispatcher;
+use EventSourcing\Domain\EventDispatcher;
+use EventSourcing\Domain\EventSourcingEventDispatcher;
 use EventSourcing\EventSourcing\EventSourcingRepository;
 use EventSourcing\EventStore\EventStore;
 use EventSourcing\EventStore\EventStoreRepository;
@@ -14,6 +14,8 @@ use EventSourcing\Laravel\Commands\MakeServiceProviderCommand;
 use EventSourcing\Laravel\Commands\RebuildProjectionsCommand;
 use EventSourcing\Laravel\Commands\ScaffoldAggregateCommand;
 use EventSourcing\Laravel\EventStore\MysqlEventStore;
+use EventSourcing\Serialization\Serializer;
+use EventSourcing\Serialization\SimpleSerializer;
 use Illuminate\Support\ServiceProvider;
 
 class EventSourcingServiceProvider extends ServiceProvider
@@ -37,8 +39,8 @@ class EventSourcingServiceProvider extends ServiceProvider
     {
         $this->app->singleton(EventDispatcher::class, EventSourcingEventDispatcher::class);
         $this->app->singleton(EventStore::class, MysqlEventStore::class);
-
         $this->app->singleton(EventStoreRepository::class, EventSourcingRepository::class);
+        $this->app->singleton(Serializer::class, SimpleSerializer::class);
 
         $this->registerArtisanCommands();
 

@@ -58,9 +58,10 @@ class MakeEventStoreTableCommand extends Command
         try {
             $this->app['db']->connection($this->connection)->getSchemaBuilder()->create($this->table, function (Blueprint $table) {
                 $table->increments('id');
-                $table->string('uuid', 50);
 
+                $table->string('uuid', 36);
                 $table->integer('version')->unsigned();
+                $table->text('metadata');
                 $table->text('payload');
                 $table->text('type');
                 $table->dateTime('recorded_on');

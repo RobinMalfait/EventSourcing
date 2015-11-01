@@ -1,13 +1,13 @@
 <?php namespace EventSourcing\Laravel\Commands;
 
 use Carbon\Carbon;
-use EventSourcing\EventDispatcher\EventDispatcher;
+use EventSourcing\Domain\EventDispatcher;
 use EventSourcing\EventStore\EventStore;
 use EventSourcing\Serialization\Deserializer;
 use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Console\Application;
 use Illuminate\Contracts\Config\Repository as Config;
+use Illuminate\Contracts\Console\Application;
 
 class RebuildProjectionsCommand extends Command
 {

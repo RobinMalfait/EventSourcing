@@ -1,14 +1,11 @@
 <?php namespace EventSourcing\EventDispatcher;
 
 use EventSourcing\Laravel\Queue\QueueListenerExecuter;
-use EventSourcing\Serialization\Serializer;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Queue;
 
 class EventSourcingEventDispatcher implements EventDispatcher
 {
-    use Serializer;
-
     /**
      * @var array
      */
@@ -55,13 +52,9 @@ class EventSourcingEventDispatcher implements EventDispatcher
     public function addListener($name, $listener)
     {
         if ($listener instanceof Projection) {
-
             $this->projectors[$name][] = $listener;
-
         } elseif ($listener instanceof Listener) {
-
             $this->listeners[$name][] = $listener;
-
         } elseif (is_string($listener)) {
             $this->addListener($name, app()->make($listener));
         }
@@ -141,7 +134,9 @@ class EventSourcingEventDispatcher implements EventDispatcher
         if (! $this->status && $listener instanceof ShouldQueue) {
             Queue::push(QueueListenerExecuter::class, [
                 'listener' => get_class($listener),
-                'transferObject' => json_encode($this->serialize(new TransferObject($event, MetaData::fromArray($metadata))))
+                'transferObject' => json_encode($this->serialize(
+                    new TransferObject($event, MetaData::deserialize($metadata))
+                ))
             ]);
         } else {
             $listener->handle($event, $metadata);

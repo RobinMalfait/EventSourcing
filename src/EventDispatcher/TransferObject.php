@@ -1,9 +1,10 @@
 <?php namespace EventSourcing\EventDispatcher;
 
 use EventSourcing\Domain\DomainEvent;
-use Illuminate\Contracts\Support\Arrayable;
+use EventSourcing\Domain\MetaData;
+use EventSourcing\Serialization\Serializable;
 
-class TransferObject implements Arrayable
+class TransferObject implements Serializable
 {
     /**
      * @var DomainEvent
@@ -26,28 +27,38 @@ class TransferObject implements Arrayable
     }
 
     /**
+     * @return array
+     */
+    public function serialize()
+    {
+        return [
+            'event' => $this->event->serialize(),
+            'metadata' => $this->metadata->serialize()
+        ];
+    }
+
+    /**
+     * @param array $data
+     * @return mixed
+     */
+    public static function deserialize(array $data)
+    {
+        return new static($data['event'], $data['metadata']);
+    }
+
+    /**
+     * @return MetaData
+     */
+    public function getMetadata()
+    {
+        return $this->metadata;
+    }
+
+    /**
      * @return DomainEvent
      */
     public function getEvent()
     {
         return $this->event;
-    }
-
-    /**
-     * @return array
-     */
-    public function getMetadata()
-    {
-        return $this->metadata->getData();
-    }
-
-    /**
-     * Get the instance as an array.
-     *
-     * @return array
-     */
-    public function toArray()
-    {
-        return $this->metadata->getData();
     }
 }

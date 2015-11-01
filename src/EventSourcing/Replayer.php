@@ -1,7 +1,6 @@
 <?php namespace EventSourcing\EventSourcing;
 
 use EventSourcing\Domain\DomainEvent;
-use ReflectionClass;
 
 trait Replayer
 {
@@ -16,8 +15,8 @@ trait Replayer
 
     public function applyAnEvent(DomainEvent $event)
     {
-        $reflection = new ReflectionClass($event);
-        $method = "apply" . $reflection->getShortName();
+        $classParts = explode('\\', get_class($event));
+        $method = "apply" . end($classParts);
 
         if (method_exists($this, $method)) {
             call_user_func([$this, $method], $event);

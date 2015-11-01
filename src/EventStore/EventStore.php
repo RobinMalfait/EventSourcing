@@ -2,9 +2,10 @@
 
 use Carbon\Carbon;
 use EventSourcing\EventDispatcher\EventDispatcher;
-use EventSourcing\EventDispatcher\MetaData;
+use EventSourcing\Domain\MetaData;
 use EventSourcing\EventDispatcher\TransferObject;
 use EventSourcing\Laravel\Queue\QueueDispatcherListener;
+use EventSourcing\Serialization\Serializer;
 use Exception;
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Contracts\Foundation\Application;
@@ -28,11 +29,20 @@ abstract class EventStore
      */
     protected $config;
 
+    /**
+     * @var Serializer
+     */
+    protected $serializer;
+
+    /**
+     * @param Application $app
+     */
     public function __construct(Application $app)
     {
         $this->log = $app->make(Log::class);
         $this->config = $app->make(Config::class);
         $this->dispatcher = $app->make(EventDispatcher::class);
+        $this->serializer = $app->make(Serializer::class);
     }
 
     /**
@@ -44,28 +54,27 @@ abstract class EventStore
         foreach ($aggregate->releaseEvents() as $event) {
             $aggregate->applyAnEvent($event);
 
-            $uuid = $event->getAggregateId();
-            $version = $aggregate->getVersion();
-            $type = strtolower(str_replace("\\", ".", get_class($event)));
-            $recordedOn = Carbon::now();
-
             try {
+                $metadata = new MetaData($event->getMetaData());
+
                 $transferObject = new TransferObject(
                     $event,
-                    new MetaData(
-                        $uuid,
-                        $version,
-                        $type,
-                        (string) $recordedOn
+                    $metadata->merge(
+                        new MetaData([
+                            'uuid' => $event->getAggregateId(),
+                            'version' => $aggregate->getVersion(),
+                            'type' => strtolower(str_replace("\\", ".", get_class($event))),
+                            'recorded_on' => (string)(Carbon::now())
+                        ])
                     )
                 );
 
                 $this->storeEvent($transferObject);
 
                 if ($this->config->get('event_sourcing.autoqueue', false)) {
-                    Queue::push(QueueDispatcherListener::class, json_encode($this->serialize($transferObject)));
+                    Queue::push(QueueDispatcherListener::class, json_encode($this->serializer->serialize($transferObject)));
                 } else {
-                    $this->dispatcher->dispatch($transferObject->getEvent(), $transferObject->getMetadata());
+                    $this->dispatcher->dispatch($transferObject->getEvent(), $transferObject->getMetadata()->serialize());
                 }
             } catch (Exception $ex) {
                 $this->log->error("An error has occurred while storing an event [" . $ex->getMessage() . "]", $ex->getTrace());

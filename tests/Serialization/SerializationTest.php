@@ -1,64 +1,91 @@
 <?php namespace EventSourcing\Test\Serialization;
 
-use Carbon\Carbon;
-use EventSourcing\Domain\DomainEvent;
-use EventSourcing\EventDispatcher\MetaData;
-use EventSourcing\EventDispatcher\TransferObject;
 use EventSourcing\Serialization\Deserializer;
+use EventSourcing\Serialization\Serializable;
 use EventSourcing\Serialization\Serializer;
+use EventSourcing\Serialization\SimpleSerializer;
 use EventSourcing\Test\TestCase;
 
 class SerializationTest extends TestCase
 {
-    use Serializer, Deserializer;
+    /**
+     * @var Serializer
+     */
+    private $serializer;
+
+    public function setUp()
+    {
+        $this->serializer = new SimpleSerializer();
+    }
 
     /**
      * @test
      */
-    public function it_can_serialize_and_deserialize()
+    public function it_can_serialize_itself()
     {
-        $data = new SerializationExampleClass(new D(new E()));
+        $object = new SerializationExampleClass('a', 'b');
 
-        $serialized = $this->serialize($data);
+        $this->assertEquals(['foo' => 'a', 'bar' => 'b'], $object->serialize());
+    }
 
-        $this->assertEquals($data, $this->deserialize($serialized));
+    /**
+     * @test
+     */
+    public function it_can_deserialize_itself()
+    {
+        $object = new SerializationExampleClass('a', 'b');
+
+        $this->assertInstanceOf(SerializationExampleClass::class, $object->deserialize(['foo' => 'a', 'bar' => 'b']));
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_be_serialized_and_deserialized()
+    {
+        $object = new SerializationExampleClass('a', 'b');
+
+        $serialized = $this->serializer->serialize($object);
+
+        $this->assertArrayHasKey('class', $serialized);
+        $this->assertArrayHasKey('payload', $serialized);
+
+        $this->assertEquals($object, $this->serializer->deserialize($serialized));
     }
 }
 
-
-class SerializationExampleClass
+class SerializationExampleClass implements Serializable
 {
-    public $a = "Some String";
+    public $foo;
 
-    protected $b = "Some Other String";
+    public $bar;
 
-    private $c = "Another string but private";
-
-    private $bool = true;
-
-    private $id = 123;
-
-    private $d;
-
-    public function __construct(D $d)
+    public function __construct($foo, $bar)
     {
-        $this->d = $d;
+        $this->foo = $foo;
+        $this->bar = $bar;
     }
-}
 
-class D
-{
-    private $id = 321;
-
-    private $recursive;
-
-    public function __construct(E $e)
+    /**
+     * @return array
+     */
+    public function serialize()
     {
-        $this->recursive = $e;
+        return [
+            'foo' => $this->foo,
+            'bar' => $this->bar
+        ];
     }
-}
 
-class E
-{
-    private $id = 321;
+    /**
+     * @param array $data
+     * @return mixed
+     */
+    public static function deserialize(array $data)
+    {
+        return new static(
+            $data['foo'],
+            $data['bar']
+        );
+    }
 }
