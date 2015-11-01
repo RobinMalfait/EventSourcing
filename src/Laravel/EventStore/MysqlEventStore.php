@@ -37,7 +37,7 @@ final class MysqlEventStore extends EventStore
     public function getEventsFor($id)
     {
         $rows = $this->db->table($this->table)
-            ->select(['uuid', 'version', 'payload', 'type', 'recorded_on'])
+            ->select(['uuid', 'version', 'payload', 'metadata', 'type', 'recorded_on'])
             ->where('uuid', $id)
             ->orderBy('version', 'asc')
             ->get();
@@ -61,7 +61,7 @@ final class MysqlEventStore extends EventStore
     public function getAllEvents()
     {
         return $this->db->table($this->getTableName())
-            ->select(['uuid', 'version', 'payload', 'type', 'recorded_on'])
+            ->select(['uuid', 'version', 'payload', 'metadata', 'type', 'recorded_on'])
             ->get();
     }
 
