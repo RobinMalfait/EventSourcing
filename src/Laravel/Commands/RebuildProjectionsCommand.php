@@ -1,6 +1,6 @@
 <?php namespace EventSourcing\Laravel\Commands;
 
-use EventSourcing\Domain\EventDispatcher;
+use EventSourcing\EventDispatcher\EventDispatcher;
 use EventSourcing\EventStore\EventStore;
 use EventSourcing\Serialization\Serializer;
 use Exception;

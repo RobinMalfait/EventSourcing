@@ -1,6 +1,6 @@
 <?php namespace EventSourcing\Laravel\Queue;
 
-use EventSourcing\Domain\EventDispatcher;
+use EventSourcing\EventDispatcher\EventDispatcher;
 use EventSourcing\Serialization\Serializer;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
