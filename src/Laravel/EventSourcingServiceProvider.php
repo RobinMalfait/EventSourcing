@@ -1,7 +1,7 @@
 <?php namespace EventSourcing\Laravel;
 
-use EventSourcing\Domain\EventDispatcher;
-use EventSourcing\Domain\EventSourcingEventDispatcher;
+use EventSourcing\EventDispatcher\EventDispatcher;
+use EventSourcing\EventDispatcher\EventSourcingEventDispatcher;
 use EventSourcing\EventSourcing\EventSourcingRepository;
 use EventSourcing\EventStore\EventStore;
 use EventSourcing\EventStore\EventStoreRepository;
