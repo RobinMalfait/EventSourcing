@@ -1,9 +1,8 @@
 <?php namespace EventSourcing\Laravel\Commands;
 
-use Carbon\Carbon;
 use EventSourcing\Domain\EventDispatcher;
 use EventSourcing\EventStore\EventStore;
-use EventSourcing\Serialization\Deserializer;
+use EventSourcing\Serialization\Serializer;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Config\Repository as Config;
@@ -11,8 +10,6 @@ use Illuminate\Contracts\Console\Application;
 
 class RebuildProjectionsCommand extends Command
 {
-    use Deserializer;
-
     /**
      * @var Application
      */
@@ -32,6 +29,11 @@ class RebuildProjectionsCommand extends Command
      * @var EventStore
      */
     private $eventstore;
+
+    /**
+     * @var Serializer
+     */
+    private $serializer;
 
     /**
      * The name and signature of the console command.
@@ -58,6 +60,7 @@ class RebuildProjectionsCommand extends Command
         $this->config = $this->app->make(Config::class);
         $this->dispatcher = $this->app->make(EventDispatcher::class);
         $this->eventstore = $this->app->make(EventStore::class);
+        $this->serializer = $app->make(Serializer::class);
     }
 
     /**
@@ -78,15 +81,12 @@ class RebuildProjectionsCommand extends Command
                 $this->output->progressStart(count($events));
 
                 foreach ($events as $event) {
-                    $metadata = [
-                        'uuid' => $event->uuid,
-                        'version' => $event->version,
-                        'type' => $event->type,
-                        'recorded_on' => new Carbon($event->recorded_on)
-                    ];
 
-                    $event = $this->deserialize(json_decode($event->payload, true));
-                    $this->dispatcher->project($event, $metadata);
+                    $this->dispatcher->project(
+                        $this->serializer->deserialize(json_decode($event->payload, true)),
+                        $this->serializer->deserialize(json_decode($event->metadata, true))
+                    );
+
                     $this->output->progressAdvance();
                 }
 

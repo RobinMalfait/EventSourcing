@@ -18,10 +18,12 @@ class QueueDispatcherListener implements ShouldQueue
 
     /**
      * @param EventDispatcher $dispatcher
+     * @param Serializer $serializer
      */
-    public function __construct(EventDispatcher $dispatcher)
+    public function __construct(EventDispatcher $dispatcher, Serializer $serializer)
     {
         $this->dispatcher = $dispatcher;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -32,7 +34,10 @@ class QueueDispatcherListener implements ShouldQueue
     {
         $transferObject = $this->serializer->deserialize(json_decode($transferObject, true));
 
-        $this->dispatcher->dispatch($transferObject->getEvent(), $transferObject->getMetadata()->serialize());
+        $this->dispatcher->dispatch(
+            $transferObject->getEvent(),
+            $transferObject->getMetadata()->serialize()
+        );
 
         $job->delete();
     }

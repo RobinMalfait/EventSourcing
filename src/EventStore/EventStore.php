@@ -74,7 +74,10 @@ abstract class EventStore
                 if ($this->config->get('event_sourcing.autoqueue', false)) {
                     Queue::push(QueueDispatcherListener::class, json_encode($this->serializer->serialize($transferObject)));
                 } else {
-                    $this->dispatcher->dispatch($transferObject->getEvent(), $transferObject->getMetadata()->serialize());
+                    $this->dispatcher->dispatch(
+                        $transferObject->getEvent(),
+                        $transferObject->getMetadata()->serialize()
+                    );
                 }
             } catch (Exception $ex) {
                 $this->log->error("An error has occurred while storing an event [" . $ex->getMessage() . "]", $ex->getTrace());
