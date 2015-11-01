@@ -3,7 +3,6 @@
 use EventSourcing\EventDispatcher\TransferObject;
 use EventSourcing\EventStore\EventStore;
 use EventSourcing\Exceptions\NoEventsFoundException;
-use EventSourcing\Serialization\Serializer;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\QueryException;
 
@@ -20,11 +19,6 @@ final class MysqlEventStore extends EventStore
     private $table;
 
     /**
-     * @var Serializer
-     */
-    private $serializer;
-
-    /**
      * @param Application $app
      */
     public function __construct(Application $app)
@@ -33,7 +27,6 @@ final class MysqlEventStore extends EventStore
 
         $this->db = $app->make('db')->connection($this->getConnectionName());
         $this->table = $this->getTableName();
-        $this->serializer = $app->make(Serializer::class);
     }
 
     /**

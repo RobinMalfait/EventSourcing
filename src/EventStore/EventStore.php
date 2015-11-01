@@ -30,11 +30,6 @@ abstract class EventStore
     protected $config;
 
     /**
-     * @var Serializer
-     */
-    protected $serializer;
-
-    /**
      * @param Application $app
      */
     public function __construct(Application $app)
