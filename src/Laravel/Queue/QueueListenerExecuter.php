@@ -1,15 +1,12 @@
 <?php namespace EventSourcing\Laravel\Queue;
 
 use EventSourcing\EventDispatcher\TransferObject;
-use EventSourcing\Serialization\Deserializer;
 use EventSourcing\Serialization\Serializer;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class QueueListenerExecuter implements ShouldQueue
 {
-    use Deserializer;
-
     /**
      * @var Application
      */
