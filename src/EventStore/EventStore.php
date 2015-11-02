@@ -70,7 +70,7 @@ abstract class EventStore
                 } else {
                     $this->dispatcher->dispatch(
                         $transferObject->getEvent(),
-                        $transferObject->getMetadata()->serialize()
+                        $transferObject->getMetadata()
                     );
                 }
             } catch (Exception $ex) {

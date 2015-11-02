@@ -29,7 +29,7 @@ class QueueDispatcherListener implements ShouldQueue
 
         $this->dispatcher->dispatch(
             $transferObject->getEvent(),
-            $transferObject->getMetadata()->serialize()
+            $transferObject->getMetadata()
         );
 
         $job->delete();
