@@ -41,7 +41,7 @@ class QueueListenerExecuter implements ShouldQueue
 
         $this->listener->handle(
             $this->transferObject->getEvent(),
-            $this->transferObject->getMetadata()
+            $this->transferObject->getMetadata()->serialize()
         );
 
         $job->delete();
