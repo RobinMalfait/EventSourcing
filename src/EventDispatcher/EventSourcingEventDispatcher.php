@@ -1,5 +1,6 @@
 <?php namespace EventSourcing\EventDispatcher;
 
+use EventSourcing\Domain\DomainEvent;
 use EventSourcing\Domain\MetaData;
 use EventSourcing\Laravel\Queue\QueueListenerExecuter;
 use EventSourcing\Serialization\Serializer;
@@ -24,26 +25,26 @@ class EventSourcingEventDispatcher implements EventDispatcher
     private $status = false;
 
     /**
-     * @param $event
-     * @param array $metadata
+     * @param DomainEvent $event
+     * @param MetaData $metadata
      */
-    public function dispatch($event, $metadata = [])
+    public function dispatch(DomainEvent $event, MetaData $metadata)
     {
         $this->project($event, $metadata);
 
         foreach ($this->getListeners(get_class($event)) as $listener) {
-            $this->handle($listener, $event, $metadata);
+            $this->handle($listener, $event, $metadata->serialize());
         }
     }
 
     /**
-     * @param $event
-     * @param array $metadata
+     * @param DomainEvent $event
+     * @param MetaData $metadata
      */
-    public function project($event, $metadata = [])
+    public function project(DomainEvent $event, MetaData $metadata)
     {
         foreach ($this->getProjectors(get_class($event)) as $projector) {
-            $this->handle($projector, $event, $metadata);
+            $this->handle($projector, $event, $metadata->serialize());
         }
     }
 
