@@ -7,15 +7,9 @@ use EventSourcing\Serialization\Serializer;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Config\Repository as Config;
-use Illuminate\Contracts\Console\Application;
 
 class RebuildProjectionsCommand extends Command
 {
-    /**
-     * @var Application
-     */
-    private $app;
-
     /**
      * @var int
      */
@@ -30,7 +24,6 @@ class RebuildProjectionsCommand extends Command
      * @var EventStore
      */
     private $eventstore;
-
 
     /**
      * The name and signature of the console command.
@@ -47,16 +40,15 @@ class RebuildProjectionsCommand extends Command
     protected $description = 'Rebuild all the projections by cleaning migrations and replaying events.';
 
     /**
-     * @param $app
+     *
      */
-    public function __construct($app)
+    public function __construct()
     {
         parent::__construct();
 
-        $this->app = $app;
-        $this->config = $this->app->make(Config::class);
-        $this->dispatcher = $this->app->make(EventDispatcher::class);
-        $this->eventstore = $this->app->make(EventStore::class);
+        $this->config = app()->make(Config::class);
+        $this->dispatcher = app()->make(EventDispatcher::class);
+        $this->eventstore = app()->make(EventStore::class);
     }
 
     /**

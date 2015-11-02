@@ -19,18 +19,6 @@ class ScaffoldAggregateCommand extends Command
     protected $description = 'Scaffolding everything you need!';
 
     /**
-     * @var
-     */
-    protected $app;
-
-    public function __construct($app)
-    {
-        parent::__construct();
-
-        $this->app = $app;
-    }
-
-    /**
      *
      */
     public function handle()

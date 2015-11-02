@@ -4,6 +4,10 @@ use EventSourcing\EventDispatcher\EventDispatcher;
 use EventSourcing\Serialization\Serializer;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
+/**
+ * Class QueueDispatcherListener
+ * @package EventSourcing\Laravel\Queue
+ */
 class QueueDispatcherListener implements ShouldQueue
 {
     /**

@@ -5,6 +5,10 @@ use EventSourcing\Domain\MetaData;
 use EventSourcing\Serialization\Serializable;
 use EventSourcing\Serialization\Serializer;
 
+/**
+ * Class TransferObject
+ * @package EventSourcing\EventDispatcher
+ */
 class TransferObject implements Serializable
 {
     /**

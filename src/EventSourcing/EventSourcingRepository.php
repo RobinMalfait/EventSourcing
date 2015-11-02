@@ -5,6 +5,10 @@ use EventSourcing\EventStore\EventStore;
 use EventSourcing\EventStore\EventStoreRepository;
 use EventSourcing\Exceptions\AggregateClassNotFoundException;
 
+/**
+ * Class EventSourcingRepository
+ * @package EventSourcing\EventSourcing
+ */
 class EventSourcingRepository implements EventStoreRepository
 {
     /**

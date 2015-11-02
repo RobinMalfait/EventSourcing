@@ -1,5 +1,9 @@
 <?php namespace EventSourcing\EventSourcing;
 
+/**
+ * Class Uuid
+ * @package EventSourcing\EventSourcing
+ */
 final class Uuid
 {
     /**

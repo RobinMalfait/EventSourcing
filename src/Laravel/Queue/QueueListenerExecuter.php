@@ -2,16 +2,10 @@
 
 use EventSourcing\EventDispatcher\TransferObject;
 use EventSourcing\Serialization\Serializer;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class QueueListenerExecuter implements ShouldQueue
 {
-    /**
-     * @var Application
-     */
-    private $app;
-
     /**
      * @var
      */
@@ -21,14 +15,6 @@ class QueueListenerExecuter implements ShouldQueue
      * @var TransferObject
      */
     private $transferObject;
-
-    /**
-     * @param Application $app
-     */
-    public function __construct(Application $app)
-    {
-        $this->app = $app;
-    }
 
     /**
      * @param $job

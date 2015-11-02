@@ -7,6 +7,10 @@ use EventSourcing\Serialization\Serializer;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Queue;
 
+/**
+ * Class EventSourcingEventDispatcher
+ * @package EventSourcing\EventDispatcher
+ */
 class EventSourcingEventDispatcher implements EventDispatcher
 {
     /**

@@ -89,14 +89,14 @@ class EventSourcingServiceProvider extends ServiceProvider
     public function registerScaffoldAggregateCommand()
     {
         $this->app->singleton('command.event-sourcing.make.scaffold', function () {
-            return new ScaffoldAggregateCommand($this->app);
+            return new ScaffoldAggregateCommand();
         });
     }
 
     public function registerMakeEventStoreTableCommand()
     {
         $this->app->singleton('command.event-sourcing.table.create', function () {
-            return new MakeEventStoreTableCommand($this->app);
+            return new MakeEventStoreTableCommand();
         });
     }
 
@@ -117,7 +117,7 @@ class EventSourcingServiceProvider extends ServiceProvider
     public function registerRebuildProjectionsCommand()
     {
         $this->app->singleton('command.event-sourcing.rebuild-projections', function () {
-            return new RebuildProjectionsCommand($this->app);
+            return new RebuildProjectionsCommand();
         });
     }
 

@@ -8,10 +8,13 @@ use EventSourcing\Laravel\Queue\QueueDispatcherListener;
 use EventSourcing\Serialization\Serializer;
 use Exception;
 use Illuminate\Contracts\Config\Repository as Config;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Logging\Log;
 use Illuminate\Support\Facades\Queue;
 
+/**
+ * Class EventStore
+ * @package EventSourcing\EventStore
+ */
 abstract class EventStore
 {
     /**
@@ -30,13 +33,13 @@ abstract class EventStore
     protected $config;
 
     /**
-     * @param Application $app
+     *
      */
-    public function __construct(Application $app)
+    public function __construct()
     {
-        $this->log = $app->make(Log::class);
-        $this->config = $app->make(Config::class);
-        $this->dispatcher = $app->make(EventDispatcher::class);
+        $this->log = app()->make(Log::class);
+        $this->config = app()->make(Config::class);
+        $this->dispatcher = app()->make(EventDispatcher::class);
     }
 
     /**

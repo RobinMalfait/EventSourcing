@@ -2,6 +2,10 @@
 
 use EventSourcing\Serialization\Serializable;
 
+/**
+ * Class MetaData
+ * @package EventSourcing\Domain
+ */
 class MetaData implements Serializable
 {
     /**

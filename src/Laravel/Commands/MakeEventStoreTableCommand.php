@@ -8,11 +8,6 @@ use Illuminate\Database\Schema\Blueprint;
 class MakeEventStoreTableCommand extends Command
 {
     /**
-     * @var
-     */
-    private $app;
-
-    /**
      * The name and signature of the console command.
      *
      * @var string
@@ -36,13 +31,12 @@ class MakeEventStoreTableCommand extends Command
      */
     protected $connection;
 
-    public function __construct($app)
+    public function __construct()
     {
         parent::__construct();
 
-        $config = $app->make(Config::class);
+        $config = app()->make(Config::class);
 
-        $this->app = $app;
         $this->table = $config->get('event_sourcing.table_name', 'eventstore');
         $this->connection = $config->get('event_sourcing.connection_name', 'eventstore');
     }
@@ -56,7 +50,7 @@ class MakeEventStoreTableCommand extends Command
     {
         $success = false;
         try {
-            $this->app['db']->connection($this->connection)->getSchemaBuilder()->create($this->table, function (Blueprint $table) {
+            app()->make('db')->connection($this->connection)->getSchemaBuilder()->create($this->table, function (Blueprint $table) {
                 $table->increments('id');
 
                 $table->string('uuid', 36);

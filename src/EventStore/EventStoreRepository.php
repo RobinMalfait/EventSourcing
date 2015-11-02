@@ -2,6 +2,10 @@
 
 use EventSourcing\Domain\AggregateRoot;
 
+/**
+ * Interface EventStoreRepository
+ * @package EventSourcing\EventStore
+ */
 interface EventStoreRepository
 {
     /**

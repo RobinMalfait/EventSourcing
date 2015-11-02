@@ -2,6 +2,10 @@
 
 use EventSourcing\Serialization\Serializable;
 
+/**
+ * Interface DomainEvent
+ * @package EventSourcing\Domain
+ */
 interface DomainEvent extends Serializable
 {
     /**
