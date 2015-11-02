@@ -1,5 +1,6 @@
 <?php namespace EventSourcing\Laravel\Commands;
 
+use EventSourcing\Domain\MetaData;
 use EventSourcing\EventDispatcher\EventDispatcher;
 use EventSourcing\EventStore\EventStore;
 use EventSourcing\Serialization\Serializer;
@@ -77,9 +78,16 @@ class RebuildProjectionsCommand extends Command
 
                 foreach ($events as $event) {
 
+                    $metaData = Serializer::deserialize(json_decode($event->metadata, true));
+
                     $this->dispatcher->project(
                         Serializer::deserialize(json_decode($event->payload, true)),
-                        Serializer::deserialize(json_decode($event->metadata, true))
+                        $metaData->merge(new MetaData([
+                            'uuid' => $event->uuid,
+                            'version' => $event->version,
+                            'type' => $event->type,
+                            'recorded_on' => $event->recorded_on
+                        ]))
                     );
 
                     $this->output->progressAdvance();
