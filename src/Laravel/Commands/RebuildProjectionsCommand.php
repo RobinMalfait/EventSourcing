@@ -69,7 +69,7 @@ class RebuildProjectionsCommand extends Command
         $this->timeMe(function () {
             $this->runPreRebuildCommands();
 
-            $this->dispatcher->rebuildMode($this->config->get('event_sourcing.disable_projection_queue', true));
+            $this->dispatcher->rebuildMode((bool) $this->config->get('event_sourcing.disable_projection_queue'));
 
             $this->action("Loading events from EventStore", function () {
                 $events = $this->getAllEvents();
