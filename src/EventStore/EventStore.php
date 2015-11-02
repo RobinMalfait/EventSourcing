@@ -37,7 +37,6 @@ abstract class EventStore
         $this->log = $app->make(Log::class);
         $this->config = $app->make(Config::class);
         $this->dispatcher = $app->make(EventDispatcher::class);
-        $this->serializer = $app->make(Serializer::class);
     }
 
     /**
@@ -67,7 +66,7 @@ abstract class EventStore
                 $this->storeEvent($transferObject);
 
                 if ($this->config->get('event_sourcing.autoqueue', false)) {
-                    Queue::push(QueueDispatcherListener::class, json_encode($this->serializer->serialize($transferObject)));
+                    Queue::push(QueueDispatcherListener::class, json_encode(Serializer::serialize($transferObject)));
                 } else {
                     $this->dispatcher->dispatch(
                         $transferObject->getEvent(),

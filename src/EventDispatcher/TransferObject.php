@@ -3,6 +3,7 @@
 use EventSourcing\Domain\DomainEvent;
 use EventSourcing\Domain\MetaData;
 use EventSourcing\Serialization\Serializable;
+use EventSourcing\Serialization\Serializer;
 
 class TransferObject implements Serializable
 {
@@ -32,8 +33,8 @@ class TransferObject implements Serializable
     public function serialize()
     {
         return [
-            'event' => $this->event->serialize(),
-            'metadata' => $this->metadata->serialize()
+            'event' => Serializer::serialize($this->event),
+            'metadata' => Serializer::serialize($this->metadata)
         ];
     }
 
@@ -43,7 +44,10 @@ class TransferObject implements Serializable
      */
     public static function deserialize(array $data)
     {
-        return new static($data['event'], $data['metadata']);
+        return new static(
+            Serializer::deserialize($data['event']),
+            Serializer::deserialize($data['metadata'])
+        );
     }
 
     /**

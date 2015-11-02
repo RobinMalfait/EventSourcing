@@ -23,17 +23,11 @@ class QueueListenerExecuter implements ShouldQueue
     private $transferObject;
 
     /**
-     * @var Serializer
-     */
-    private $serializer;
-
-    /**
      * @param Application $app
      */
     public function __construct(Application $app)
     {
         $this->app = $app;
-        $this->serializer = $app->make(Serializer::class);
     }
 
     /**
@@ -43,7 +37,7 @@ class QueueListenerExecuter implements ShouldQueue
     public function fire($job, $data)
     {
         $this->listener = app()->make($data['listener']);
-        $this->transferObject = $this->serializer->deserialize(json_decode($data['transferObject'], true));
+        $this->transferObject = Serializer::deserialize(json_decode($data['transferObject'], true));
 
         $this->listener->handle(
             $this->transferObject->getEvent(),

@@ -12,18 +12,11 @@ class QueueDispatcherListener implements ShouldQueue
     protected $dispatcher;
 
     /**
-     * @var Serializer
-     */
-    protected $serializer;
-
-    /**
      * @param EventDispatcher $dispatcher
-     * @param Serializer $serializer
      */
-    public function __construct(EventDispatcher $dispatcher, Serializer $serializer)
+    public function __construct(EventDispatcher $dispatcher)
     {
         $this->dispatcher = $dispatcher;
-        $this->serializer = $serializer;
     }
 
     /**
@@ -32,7 +25,7 @@ class QueueDispatcherListener implements ShouldQueue
      */
     public function fire($job, $transferObject)
     {
-        $transferObject = $this->serializer->deserialize(json_decode($transferObject, true));
+        $transferObject = Serializer::deserialize(json_decode($transferObject, true));
 
         $this->dispatcher->dispatch(
             $transferObject->getEvent(),

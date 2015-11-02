@@ -30,10 +30,6 @@ class RebuildProjectionsCommand extends Command
      */
     private $eventstore;
 
-    /**
-     * @var Serializer
-     */
-    private $serializer;
 
     /**
      * The name and signature of the console command.
@@ -60,7 +56,6 @@ class RebuildProjectionsCommand extends Command
         $this->config = $this->app->make(Config::class);
         $this->dispatcher = $this->app->make(EventDispatcher::class);
         $this->eventstore = $this->app->make(EventStore::class);
-        $this->serializer = $app->make(Serializer::class);
     }
 
     /**
@@ -83,8 +78,8 @@ class RebuildProjectionsCommand extends Command
                 foreach ($events as $event) {
 
                     $this->dispatcher->project(
-                        $this->serializer->deserialize(json_decode($event->payload, true)),
-                        $this->serializer->deserialize(json_decode($event->metadata, true))
+                        Serializer::deserialize(json_decode($event->payload, true)),
+                        Serializer::deserialize(json_decode($event->metadata, true))
                     );
 
                     $this->output->progressAdvance();

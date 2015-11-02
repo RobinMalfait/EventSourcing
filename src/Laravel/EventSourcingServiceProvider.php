@@ -40,7 +40,6 @@ class EventSourcingServiceProvider extends ServiceProvider
         $this->app->singleton(EventDispatcher::class, EventSourcingEventDispatcher::class);
         $this->app->singleton(EventStore::class, MysqlEventStore::class);
         $this->app->singleton(EventStoreRepository::class, EventSourcingRepository::class);
-        $this->app->singleton(Serializer::class, SimpleSerializer::class);
 
         $this->registerArtisanCommands();
 

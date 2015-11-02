@@ -3,21 +3,10 @@
 use EventSourcing\Serialization\Deserializer;
 use EventSourcing\Serialization\Serializable;
 use EventSourcing\Serialization\Serializer;
-use EventSourcing\Serialization\SimpleSerializer;
 use EventSourcing\Test\TestCase;
 
 class SerializationTest extends TestCase
 {
-    /**
-     * @var Serializer
-     */
-    private $serializer;
-
-    public function setUp()
-    {
-        $this->serializer = new SimpleSerializer();
-    }
-
     /**
      * @test
      */
@@ -45,12 +34,12 @@ class SerializationTest extends TestCase
     {
         $object = new SerializationExampleClass('a', 'b');
 
-        $serialized = $this->serializer->serialize($object);
+        $serialized = Serializer::serialize($object);
 
         $this->assertArrayHasKey('class', $serialized);
         $this->assertArrayHasKey('payload', $serialized);
 
-        $this->assertEquals($object, $this->serializer->deserialize($serialized));
+        $this->assertEquals($object, Serializer::deserialize($serialized));
     }
 }
 

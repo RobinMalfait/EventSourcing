@@ -3,6 +3,7 @@
 use EventSourcing\EventDispatcher\TransferObject;
 use EventSourcing\EventStore\EventStore;
 use EventSourcing\Exceptions\NoEventsFoundException;
+use EventSourcing\Serialization\Serializer;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\QueryException;
 
@@ -49,7 +50,7 @@ final class MysqlEventStore extends EventStore
         $events = [];
 
         foreach ($rows as $row) {
-            $events[] = $this->serializer->deserialize(json_decode($row->payload, true));
+            $events[] = Serializer::deserialize(json_decode($row->payload, true));
         }
 
         return $events;
@@ -87,7 +88,7 @@ final class MysqlEventStore extends EventStore
      */
     protected function storeEvent(TransferObject $transferObject)
     {
-        $metadata = $transferObject->getMetadata();
+        $metadata = $transferObject->getMetadata()->serialize();
 
         $this->db->beginTransaction();
 
@@ -95,8 +96,8 @@ final class MysqlEventStore extends EventStore
             $this->db->table($this->table)->insert([
                 'uuid' => $metadata['uuid'],
                 'version' => $metadata['version'],
-                'payload' => json_encode($this->serializer->serialize($transferObject->getEvent())),
-                'metadata' => json_encode($this->serializer->serialize($transferObject->getMetadata())),
+                'payload' => json_encode(Serializer::serialize($transferObject->getEvent())),
+                'metadata' => json_encode(Serializer::serialize($transferObject->getMetadata())),
                 'recorded_on' => $metadata['recorded_on'],
                 'type' => $metadata['type']
             ]);

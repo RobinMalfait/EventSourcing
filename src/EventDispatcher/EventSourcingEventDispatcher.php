@@ -1,6 +1,8 @@
 <?php namespace EventSourcing\EventDispatcher;
 
+use EventSourcing\Domain\MetaData;
 use EventSourcing\Laravel\Queue\QueueListenerExecuter;
+use EventSourcing\Serialization\Serializer;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Queue;
 
@@ -132,11 +134,11 @@ class EventSourcingEventDispatcher implements EventDispatcher
     private function handle($listener, $event, $metadata)
     {
         if (! $this->status && $listener instanceof ShouldQueue) {
+            $serializedTransferObject = Serializer::serialize(new TransferObject($event, MetaData::deserialize($metadata)));
+
             Queue::push(QueueListenerExecuter::class, [
                 'listener' => get_class($listener),
-                'transferObject' => json_encode($this->serialize(
-                    new TransferObject($event, MetaData::deserialize($metadata))
-                ))
+                'transferObject' => json_encode($serializedTransferObject)
             ]);
         } else {
             $listener->handle($event, $metadata);
