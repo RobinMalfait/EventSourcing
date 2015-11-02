@@ -93,12 +93,12 @@ final class MysqlEventStore extends EventStore
 
         try {
             $this->db->table($this->table)->insert([
-                'uuid' => $metaData['uuid'],
-                'version' => $metaData['version'],
+                'uuid' => $metaData->get('uuid'),
+                'version' => $metaData->get('version'),
                 'payload' => json_encode(Serializer::serialize($transferObject->getEvent())),
                 'metadata' => json_encode(Serializer::serialize($transferObject->getMetadata())),
-                'recorded_on' => $metaData['recorded_on'],
-                'type' => $metaData['type']
+                'recorded_on' => $metaData->get('recorded_on'),
+                'type' => $metaData->get('type')
             ]);
 
             $this->db->commit();

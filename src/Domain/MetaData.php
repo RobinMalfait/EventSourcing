@@ -32,6 +32,15 @@ class MetaData implements Serializable
         );
     }
 
+    /**
+     * @param $key
+     * @param null $default
+     * @return static
+     */
+    public function get($key, $default = null)
+    {
+        return collect($this->data)->get($key, $default);
+    }
 
     /**
      * @return array
