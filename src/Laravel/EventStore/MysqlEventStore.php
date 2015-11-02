@@ -1,5 +1,6 @@
 <?php namespace EventSourcing\Laravel\EventStore;
 
+use EventSourcing\Domain\MetaData;
 use EventSourcing\EventDispatcher\TransferObject;
 use EventSourcing\EventStore\EventStore;
 use EventSourcing\Exceptions\NoEventsFoundException;
@@ -83,22 +84,21 @@ final class MysqlEventStore extends EventStore
 
     /**
      * @param TransferObject $transferObject
+     * @param MetaData $metaData
      * @return mixed
      */
-    protected function storeEvent(TransferObject $transferObject)
+    protected function storeEvent(TransferObject $transferObject, MetaData $metaData)
     {
-        $metadata = $transferObject->getMetadata()->serialize();
-
         $this->db->beginTransaction();
 
         try {
             $this->db->table($this->table)->insert([
-                'uuid' => $metadata['uuid'],
-                'version' => $metadata['version'],
+                'uuid' => $metaData['uuid'],
+                'version' => $metaData['version'],
                 'payload' => json_encode(Serializer::serialize($transferObject->getEvent())),
                 'metadata' => json_encode(Serializer::serialize($transferObject->getMetadata())),
-                'recorded_on' => $metadata['recorded_on'],
-                'type' => $metadata['type']
+                'recorded_on' => $metaData['recorded_on'],
+                'type' => $metaData['type']
             ]);
 
             $this->db->commit();

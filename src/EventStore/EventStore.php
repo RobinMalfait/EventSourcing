@@ -56,17 +56,15 @@ abstract class EventStore
 
                 $transferObject = new TransferObject(
                     $event,
-                    $metadata->merge(
-                        new MetaData([
-                            'uuid' => $event->getAggregateId(),
-                            'version' => $aggregate->getVersion(),
-                            'type' => strtolower(str_replace("\\", ".", get_class($event))),
-                            'recorded_on' => (string)(Carbon::now())
-                        ])
-                    )
+                    $metadata
                 );
 
-                $this->storeEvent($transferObject);
+                $this->storeEvent($transferObject, new MetaData([
+                    'uuid' => $event->getAggregateId(),
+                    'version' => $aggregate->getVersion(),
+                    'type' => strtolower(str_replace("\\", ".", get_class($event))),
+                    'recorded_on' => (string)(Carbon::now())
+                ]));
 
                 if ($this->config->get('event_sourcing.autoqueue', false)) {
                     Queue::push(QueueDispatcherListener::class, json_encode(Serializer::serialize($transferObject)));
@@ -95,7 +93,8 @@ abstract class EventStore
 
     /**
      * @param TransferObject $transferObject
+     * @param MetaData $metaData
      * @return mixed
      */
-    abstract protected function storeEvent(TransferObject $transferObject);
+    abstract protected function storeEvent(TransferObject $transferObject, MetaData $metaData);
 }
