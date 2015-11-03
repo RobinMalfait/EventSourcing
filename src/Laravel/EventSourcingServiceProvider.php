@@ -11,10 +11,10 @@ use EventSourcing\Laravel\Commands\MakeAggregateRepositoryCommand;
 use EventSourcing\Laravel\Commands\MakeEventStoreTableCommand;
 use EventSourcing\Laravel\Commands\MakeProjectorCommand;
 use EventSourcing\Laravel\Commands\MakeServiceProviderCommand;
+use EventSourcing\Laravel\Commands\Migrate1To2;
 use EventSourcing\Laravel\Commands\RebuildProjectionsCommand;
 use EventSourcing\Laravel\Commands\ScaffoldAggregateCommand;
 use EventSourcing\Laravel\EventStore\MysqlEventStore;
-use EventSourcing\Serialization\Serializer;
 use EventSourcing\Serialization\SimpleSerializer;
 use Illuminate\Support\ServiceProvider;
 
@@ -28,7 +28,8 @@ class EventSourcingServiceProvider extends ServiceProvider
         'ScaffoldAggregate',
         'MakeServiceProvider',
         'MakeProjector',
-        'RebuildProjections'
+        'RebuildProjections',
+        'Migrate1To2'
     ];
     /**
      * Register the service provider.
@@ -121,6 +122,14 @@ class EventSourcingServiceProvider extends ServiceProvider
         });
     }
 
+    public function registerMigrate1To2Command()
+    {
+        $this->app->singleton('command.event-sourcing.migrate1to2', function () {
+            return new Migrate1To2();
+        });
+    }
+
+
 
     public function provides()
     {
@@ -133,6 +142,7 @@ class EventSourcingServiceProvider extends ServiceProvider
             'command.event-sourcing.make.service-provider',
             'command.event-sourcing.make.projector',
             'command.event-sourcing.rebuild-projections',
+            'command.event-sourcing.migrate1to2',
         ];
     }
 }

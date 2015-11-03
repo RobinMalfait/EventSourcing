@@ -41,9 +41,110 @@ The config file looks like this:
 
 You can now tweak some configurations
 
-## Change log
+Last but not least make the event store table:
 
-Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
+```
+php artisan event-sourcing:table
+```
+
+## Update v1 to v2
+
+If you are still using the first version you better update to version 2.
+You will have less problems in the future, I promise.
+
+In Version 2 we give each DomainEvent the responsibility to give data and receive data.
+Those methods are 
+
+```php
+/**
+ * serialize(); // Which returns an array of serialized  data
+ * 
+ * deserialize(array $data); // Which has a parameter with the data that basically comes from the 
+ * serialize method. This method should also return an instance of the current event
+ *
+ * For Example:
+ */
+ 
+ <?php namespace App\Users\Events;
+
+use EventSourcing\Domain\DomainEvent;
+
+final class UserWasRegistered implements DomainEvent
+{
+    private $user_id;
+
+    private $email;
+
+    private $password; // Yes, this is encrypted
+
+    public function __construct($user_id, $email, $password)
+    {
+        $this->user_id = $user_id;
+        $this->email = $email;
+        $this->password = $password;
+    }
+
+    /**
+     * @return UserId
+     */
+    public function getAggregateId()
+    {
+        return $this->user_id;
+    }
+
+    public function getMetaData() 
+    {
+        return []; // Could be for example the logged in user, ...
+    }
+
+    /**
+     * @return array
+     */
+    public function serialize()
+    {
+        return [
+            'user_id' => $this->user_id,
+            'email' => $this->email,
+            'password' => $this->password
+        ];
+    }
+
+    /**
+     * @param array $data
+     * @return mixed
+     */
+    public static function deserialize(array $data)
+    {
+        return new static(
+            $data['user_id'],
+            $data['email'],
+            $data['password']
+        );
+    }
+}
+
+```
+
+Once you have defined every serialize / deserialize method in your events you can start the migration process.
+
+In your database rename `eventstore` to `eventstore_backup`
+
+Now you can run the following command in your terminal:
+
+```
+php artisan event-sourcing:table
+```
+
+This will create the eventstore, now you should see 2 tables in your database
+
+1. `eventstore_backup` => Your old table with all data in
+2. `eventstore` => Your new *empty* table
+
+I also have written a helper method to do the migration now.
+
+```
+php artisan event-sourcing:1to2 eventstore_backup eventstore
+```
 
 ## Testing
 

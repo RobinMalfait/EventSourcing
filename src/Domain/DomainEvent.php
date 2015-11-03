@@ -17,5 +17,4 @@ interface DomainEvent extends Serializable
      * @return array
      */
     public function getMetaData();
-
 }

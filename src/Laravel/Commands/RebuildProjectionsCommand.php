@@ -69,7 +69,6 @@ class RebuildProjectionsCommand extends Command
                 $this->output->progressStart(count($events));
 
                 foreach ($events as $event) {
-
                     $metaData = Serializer::deserialize(json_decode($event->metadata, true));
 
                     $this->dispatcher->project(
