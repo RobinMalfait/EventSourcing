@@ -40,6 +40,11 @@ class RebuildProjectionsCommand extends Command
     protected $description = 'Rebuild all the projections by cleaning migrations and replaying events.';
 
     /**
+     * @var int
+     */
+    private $totalExecutionTime = 0;
+
+    /**
      *
      */
     public function __construct()
@@ -58,39 +63,24 @@ class RebuildProjectionsCommand extends Command
      */
     public function handle()
     {
-        $this->timeMe(function () {
-            $this->runPreRebuildCommands();
+        $this->runPreRebuildCommands();
 
-            $this->dispatcher->rebuildMode((bool) $this->config->get('event_sourcing.disable_projection_queue'));
+        $this->setRebuildModeTo(true);
+        $this->rebuildEvents();
+        $this->setRebuildModeTo(false);
 
-            $this->action("Loading events from EventStore", function () {
-                $events = $this->getAllEvents();
+        $this->runPostRebuildCommands();
 
-                $this->output->progressStart(count($events));
+        // Statistics
 
-                foreach ($events as $event) {
-                    $metaData = Serializer::deserialize(json_decode($event->metadata, true));
-
-                    $this->dispatcher->project(
-                        Serializer::deserialize(json_decode($event->payload, true)),
-                        $metaData->merge(new MetaData([
-                            'uuid' => $event->uuid,
-                            'version' => $event->version,
-                            'type' => $event->type,
-                            'recorded_on' => $event->recorded_on
-                        ]))
-                    );
-
-                    $this->output->progressAdvance();
-                }
-
-                $this->output->progressFinish();
-            });
-
-            $this->dispatcher->rebuildMode(false);
-
-            $this->runPostRebuildCommands();
-        }, "Total Execution Time");
+        $this->output->writeln("");
+        $this->table([
+            'Statistic', 'Value'
+        ], [
+            ['Steps', "<comment>" . ($this->steps - 1) . "</comment>"],
+            ['Total Execution Time', "<comment>" . $this->humanReadableExecutionTime($this->totalExecutionTime) . "</comment>"],
+            ['Average Execution Time', "<comment>" . $this->humanReadableExecutionTime($this->totalExecutionTime / ($this->steps - 1)) . "</comment>"]
+        ]);
     }
 
     /**
@@ -103,17 +93,32 @@ class RebuildProjectionsCommand extends Command
 
     /**
      * @param $string
-     * @param string $fillWith
+     * @internal param string $fillWith
      */
-    private function printHeader($string, $fillWith = "=")
+    private function printHeader($string)
     {
-        $comment = collect(["<comment>", "</comment>"]);
+        $data = "<comment>Step " . $this->steps . ")</comment> " . $string;
 
-        $data = $comment->first() . "Step " . $this->steps . ")" . $comment->last() . " " . $string;
-
-        $this->info(PHP_EOL . $data . PHP_EOL . "<comment>" . str_repeat($fillWith, strlen($data) - strlen(implode("", $comment->all()))) . PHP_EOL);
+        $this->info(PHP_EOL . $data . PHP_EOL);
 
         $this->steps++;
+    }
+
+    /**
+     * @param callable $callback
+     * @return string
+     */
+    private function timeExecution(callable $callback)
+    {
+        $start = microtime(true);
+        call_user_func($callback);
+        $end = microtime(true);
+
+        $diff = $end - $start;
+
+        $this->totalExecutionTime += $diff;
+
+        return $diff;
     }
 
     /**
@@ -123,28 +128,9 @@ class RebuildProjectionsCommand extends Command
     private function action($title, callable $method)
     {
         $this->printHeader($title);
-        $this->timeMe($method);
-    }
+        $time = $this->timeExecution($method);
 
-    /**
-     * @param $timeInSeconds
-     * @return string
-     */
-    private function calcExecutionTime($timeInSeconds)
-    {
-        $time = $timeInSeconds;
-
-        if ($time > 59) {
-            $time /= 60;
-            $symbol = "m";
-        } elseif ($time > 0.99) {
-            $symbol = "s";
-        } else {
-            $time *= 1000;
-            $symbol = "ms";
-        }
-
-        return round($time, 1) . $symbol;
+        $this->info(PHP_EOL . "Execution Time: <comment>" . $this->humanReadableExecutionTime($time)) . '</comment>';
     }
 
     /**
@@ -208,17 +194,65 @@ class RebuildProjectionsCommand extends Command
         return [$command, $options];
     }
 
-    /**
-     * @param callable $callback
-     * @param string $message
-     */
-    private function timeMe(callable $callback, $message = "Excecution Time")
+    private function setRebuildModeTo($value)
     {
-        $start = microtime(true);
-        call_user_func($callback);
-        $end = microtime(true);
+        if (! $value) {
+            $this->dispatcher->rebuildMode(false);
+        }
 
-        $executionTime = $this->calcExecutionTime($end - $start);
-        $this->info(PHP_EOL . $message . ": <comment>" . $executionTime . "</comment>");
+        $this->dispatcher->rebuildMode(
+            (bool) $this->config->get('event_sourcing.disable_projection_queue')
+        );
+    }
+
+    private function rebuildEvents()
+    {
+        $this->action("Loading events from EventStore", function () {
+            $events = $this->getAllEvents();
+
+            $this->output->progressStart(count($events));
+
+            foreach ($events as $event) {
+                $myMetaData = Serializer::deserialize(json_decode($event->metadata, true));
+                $systemMetaData = new MetaData([
+                    'uuid' => $event->uuid,
+                    'version' => $event->version,
+                    'type' => $event->type,
+                    'recorded_on' => $event->recorded_on
+                ]);
+
+                $allMetaData = $myMetaData->merge($systemMetaData);
+
+                $this->dispatcher->project(
+                    Serializer::deserialize(json_decode($event->payload, true)),
+                    $allMetaData
+                );
+
+                $this->output->progressAdvance();
+            }
+
+            $this->output->progressFinish();
+        });
+    }
+
+    /**
+     * @param $timeInSeconds
+     * @return string
+     */
+    private function humanReadableExecutionTime($timeInSeconds)
+    {
+        $time = $timeInSeconds;
+
+        if ($time > 59) {
+            $time /= 60;
+            $symbol = "m";
+        } elseif ($time > 0.99) {
+            $symbol = "s";
+        } else {
+            $time *= 1000;
+            $symbol = "ms";
+        }
+
+        return round($time, 1) . $symbol;
     }
 }

@@ -59,19 +59,24 @@ abstract class EventStore
                     $metadata
                 );
 
-                $this->storeEvent($transferObject, new MetaData([
+                $systemMetaData = new MetaData([
                     'uuid' => $event->getAggregateId(),
                     'version' => $aggregate->getVersion(),
                     'type' => strtolower(str_replace("\\", ".", get_class($event))),
                     'recorded_on' => (string)(Carbon::now())
-                ]));
+                ]);
+
+                $this->storeEvent($transferObject, $systemMetaData);
 
                 if ($this->config->get('event_sourcing.autoqueue', false)) {
-                    Queue::push(QueueDispatcherListener::class, json_encode(Serializer::serialize($transferObject)));
+                    Queue::push(QueueDispatcherListener::class, json_encode(Serializer::serialize(new TransferObject(
+                        $event,
+                        $systemMetaData
+                    ))));
                 } else {
                     $this->dispatcher->dispatch(
                         $transferObject->getEvent(),
-                        $transferObject->getMetadata()
+                        $transferObject->getMetadata()->merge($systemMetaData)
                     );
                 }
             } catch (Exception $ex) {
