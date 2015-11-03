@@ -55,21 +55,19 @@ You will have less problems in the future, I promise.
 In Version 2 we give each DomainEvent the responsibility to give data and receive data.
 Those methods are 
 
-```php
-/**
- * serialize(); // Which returns an array of serialized  data
- * 
- * deserialize(array $data); // Which has a parameter with the data that basically comes from the 
- * serialize method. This method should also return an instance of the current event
- *
- * For Example:
- */
+> `serialize();` Which returns an array of serialized  data
+>
+> `deserialize(array $data);` Which has a parameter with the data that basically comes from the serialize method. This method should also return an instance of the current event.
+
+### For Example:
  
- <?php namespace App\Users\Events;
+
+```php 
+<?php namespace App\Users\Events;
 
 use EventSourcing\Domain\DomainEvent;
 
-final class UserWasRegistered implements DomainEvent
+class UserWasRegistered implements DomainEvent
 {
     private $user_id;
 
@@ -144,6 +142,12 @@ I also have written a helper method to do the migration now.
 
 ```
 php artisan event-sourcing:1to2 eventstore_backup eventstore
+```
+
+Or you can also just run the following command because *eventstore_backup* and *eventstore* are the defaults.
+
+```bash
+php artisan event-sourcing:1to2
 ```
 
 ## Testing
