@@ -56,19 +56,21 @@ class Migrate1To2 extends Command
                 // Serialized Event
                 $eventSerialized = $serializer->serialize($event);
                 $metaDataSerialized = $serializer->serialize(MetaData::deserialize($event->getMetaData()));
+
+                // Store
+                $this->insertInto($toTable, [
+                    'uuid' => $data->uuid,
+                    'version' => $data->version,
+                    'payload' => json_encode($eventSerialized),
+                    'metadata' => json_encode($metaDataSerialized),
+                    'type' => $data->type,
+                    'recorded_on' => $data->recorded_on
+                ]);
+
+
             } catch (Exception $e) {
                 $this->info(print_r(json_decode($data->payload, true)));
             }
-
-            // Store
-            $this->insertInto($toTable, [
-                'uuid' => $data->uuid,
-                'version' => $data->version,
-                'payload' => json_encode($eventSerialized),
-                'metadata' => json_encode($metaDataSerialized),
-                'type' => $data->type,
-                'recorded_on' => $data->recorded_on
-            ]);
 
             $this->output->progressAdvance();
         });
