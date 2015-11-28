@@ -5,6 +5,7 @@ use EventSourcing\EventDispatcher\EventSourcingEventDispatcher;
 use EventSourcing\EventSourcing\EventSourcingRepository;
 use EventSourcing\EventStore\EventStore;
 use EventSourcing\EventStore\EventStoreRepository;
+use EventSourcing\Laravel\Commands\BuildProjectionCommand;
 use EventSourcing\Laravel\Commands\MakeAggregateCommand;
 use EventSourcing\Laravel\Commands\MakeAggregateCommandCommand;
 use EventSourcing\Laravel\Commands\MakeAggregateRepositoryCommand;
@@ -29,6 +30,7 @@ class EventSourcingServiceProvider extends ServiceProvider
         'MakeServiceProvider',
         'MakeProjector',
         'RebuildProjections',
+        'BuildProjection',
         'Migrate1To2'
     ];
     /**
@@ -122,6 +124,13 @@ class EventSourcingServiceProvider extends ServiceProvider
         });
     }
 
+    public function registerBuildProjectionCommand()
+    {
+        $this->app->singleton('command.event-sourcing.build-projection', function () {
+            return new BuildProjectionCommand();
+        });
+    }
+
     public function registerMigrate1To2Command()
     {
         $this->app->singleton('command.event-sourcing.migrate1to2', function () {
@@ -142,6 +151,7 @@ class EventSourcingServiceProvider extends ServiceProvider
             'command.event-sourcing.make.service-provider',
             'command.event-sourcing.make.projector',
             'command.event-sourcing.rebuild-projections',
+            'command.event-sourcing.build-projection',
             'command.event-sourcing.migrate1to2',
         ];
     }
