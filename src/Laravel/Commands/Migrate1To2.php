@@ -66,8 +66,6 @@ class Migrate1To2 extends Command
                     'type' => $data->type,
                     'recorded_on' => $data->recorded_on
                 ]);
-
-
             } catch (Exception $e) {
                 $this->info(print_r(json_decode($data->payload, true)));
             }
