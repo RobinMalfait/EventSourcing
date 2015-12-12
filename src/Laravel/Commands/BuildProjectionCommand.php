@@ -7,6 +7,7 @@ use EventSourcing\Serialization\Serializer;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Config\Repository as Config;
+use Illuminate\Support\Collection;
 
 class BuildProjectionCommand extends Command
 {
@@ -30,7 +31,7 @@ class BuildProjectionCommand extends Command
      *
      * @var string
      */
-    protected $signature = "event-sourcing:build-projection {--projection}";
+    protected $signature = "event-sourcing:build-projection {projector}";
 
     /**
      * The console command description
@@ -70,25 +71,19 @@ class BuildProjectionCommand extends Command
         $this->setRebuildModeTo(false);
 
         $this->runPostBuildCommands();
-
-        // Statistics
-
-        $this->output->writeln("");
-        $this->table([
-            'Statistic', 'Value'
-        ], [
-            ['Steps', "<comment>" . ($this->steps - 1) . "</comment>"],
-            ['Total Execution Time', "<comment>" . $this->humanReadableExecutionTime($this->totalExecutionTime) . "</comment>"],
-            ['Average Execution Time', "<comment>" . $this->humanReadableExecutionTime($this->totalExecutionTime / ($this->steps - 1)) . "</comment>"]
-        ]);
     }
 
     /**
+     * @param Collection $types
      * @return mixed
      */
-    private function getAllEvents()
+    private function getAllEvents(Collection $types)
     {
-        return $this->eventstore->getAllEvents();
+        $events = collect($this->eventstore->getAllEvents());
+
+        return $events->filter(function ($event) use ($types) {
+            return $types->contains($event->type);
+        });
     }
 
     /**
@@ -207,11 +202,17 @@ class BuildProjectionCommand extends Command
 
     private function rebuildEvents()
     {
-        $projector = app()->make($this->option('projection'));
+        try {
+            $projector = app()->make($this->argument('projector'));
 
-        if ($projector) {
-            $this->action("Loading events from EventStore", function () {
-                $events = $this->getAllEvents();
+            $eventsNeeded = $projector->needsDomainEvents();
+
+            $eventsNeeded = collect($eventsNeeded)->map(function ($event) {
+                return strtolower(str_replace("\\", ".", $event));
+            });
+
+            $this->action("Loading events from EventStore", function () use ($eventsNeeded) {
+                $events = $this->getAllEvents($eventsNeeded);
 
                 $this->output->progressStart(count($events));
 
@@ -236,6 +237,9 @@ class BuildProjectionCommand extends Command
 
                 $this->output->progressFinish();
             });
+
+        } catch(Exception $e) {
+            $this->error("Projector does not exist!");
         }
     }
 

@@ -49,6 +49,40 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Pre Build Commands
+    |--------------------------------------------------------------------------
+    |
+    | You can define all the commands you want to execute before you
+    | Start the build of your projection from the event store
+    |
+    | The convention is 'task' => 'title'
+    | If you have options you can write the 'task' like
+    |
+    | E.x.: 'mail example@example.com --queued=true'
+    */
+    'pre_build' => [
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Post Build Commands
+    |--------------------------------------------------------------------------
+    |
+    | You can define all the commands you want to execute after you
+    | did the build of your projection from the event store
+    |
+    | The convention is 'task' => 'title'
+    | If you have options you can write the 'task' like
+    |
+    | E.x.: 'mail example@example.com --queued=true'
+    */
+    'post_build' => [
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Pre Rebuild Commands
     |--------------------------------------------------------------------------
     |

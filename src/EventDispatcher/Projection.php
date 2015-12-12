@@ -13,4 +13,9 @@ interface Projection extends Listener
      * @param array $metadata
      */
     public function handle(DomainEvent $event, $metadata = []);
+
+    /**
+     * @return array
+     */
+    public function needsDomainEvents();
 }
