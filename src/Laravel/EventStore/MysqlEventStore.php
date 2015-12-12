@@ -5,12 +5,13 @@ use EventSourcing\EventDispatcher\TransferObject;
 use EventSourcing\EventStore\EventStore;
 use EventSourcing\Exceptions\NoEventsFoundException;
 use EventSourcing\Serialization\Serializer;
+use Illuminate\Database\Connection;
 use Illuminate\Database\QueryException;
 
 final class MysqlEventStore extends EventStore
 {
     /**
-     * @var
+     * @var Connection
      */
     protected $db;
 
@@ -26,9 +27,17 @@ final class MysqlEventStore extends EventStore
     {
         parent::__construct();
 
-        $this->db = app()->make('db')->connection($this->getConnectionName());
+        $this->db = app()->make('db');
         $this->table = $this->getTableName();
     }
+
+    private function setDB()
+    {
+        if (! $this->db instanceof Connection) {
+            $this->db = $this->db->connection($this->getConnectionName());
+        }
+    }
+
 
     /**
      * @param $id
@@ -37,6 +46,8 @@ final class MysqlEventStore extends EventStore
      */
     public function getEventsFor($id)
     {
+        $this->setDB();
+
         $rows = $this->db->table($this->table)
             ->select(['uuid', 'version', 'payload', 'metadata', 'type', 'recorded_on'])
             ->where('uuid', $id)
@@ -61,6 +72,8 @@ final class MysqlEventStore extends EventStore
      */
     public function getAllEvents()
     {
+        $this->setDB();
+
         return $this->db->table($this->getTableName())
             ->select(['uuid', 'version', 'payload', 'metadata', 'type', 'recorded_on'])
             ->get();
@@ -89,6 +102,8 @@ final class MysqlEventStore extends EventStore
      */
     protected function storeEvent(TransferObject $transferObject, MetaData $metaData)
     {
+        $this->setDB();
+
         $this->db->beginTransaction();
 
         try {
