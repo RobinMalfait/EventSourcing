@@ -2,6 +2,7 @@
 
 use EventSourcing\Domain\MetaData;
 use EventSourcing\EventDispatcher\EventDispatcher;
+use EventSourcing\EventDispatcher\Projection;
 use EventSourcing\EventStore\EventStore;
 use EventSourcing\Serialization\Serializer;
 use Exception;
@@ -31,7 +32,7 @@ class BuildProjectionCommand extends Command
      *
      * @var string
      */
-    protected $signature = "event-sourcing:build-projection {projector}";
+    protected $signature = "event-sourcing:build-projection {projector?}";
 
     /**
      * The console command description
@@ -203,11 +204,13 @@ class BuildProjectionCommand extends Command
     private function rebuildEvents()
     {
         try {
-            $projector = app()->make($this->argument('projector'));
+            $projector = app()->make($this->argument('projector') ?: $this->ask('Which projector do you want (Namespace + Class)'));
 
-            $eventsNeeded = $projector->needsDomainEvents();
+            if ( ! $projector instanceof Projection) {
+                throw new Exception("This is not a valid Projector, a Projector must implement the projection interface.");
+            }
 
-            $eventsNeeded = collect($eventsNeeded)->map(function ($event) {
+            $eventsNeeded = collect($projector->needsDomainEvents())->map(function ($event) {
                 return strtolower(str_replace("\\", ".", $event));
             });
 
@@ -240,6 +243,7 @@ class BuildProjectionCommand extends Command
 
         } catch(Exception $e) {
             $this->error("Projector does not exist!");
+            $this->error($e->getMessage());
         }
     }
 
