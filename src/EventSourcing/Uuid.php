@@ -13,6 +13,6 @@ final class Uuid
      */
     public static function generate()
     {
-        return (string) \Rhumsaa\Uuid\Uuid::uuid4();
+        return (string) \Ramsey\Uuid\Uuid::uuid4();
     }
 }
