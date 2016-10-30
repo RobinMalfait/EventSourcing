@@ -50,18 +50,24 @@ class MakeEventStoreTableCommand extends Command
     {
         $success = false;
         try {
-            app()->make('db')->connection($this->connection)->getSchemaBuilder()->create($this->table, function (Blueprint $table) {
-                $table->increments('id');
+            $schema = app()->make('db')
+                ->connection($this->connection)
+                ->getSchemaBuilder();
 
-                $table->string('uuid', 36);
-                $table->integer('version')->unsigned();
-                $table->text('metadata');
-                $table->text('payload');
-                $table->text('type');
-                $table->dateTime('recorded_on');
+            if (!$schema->hasTable($this->table)) {
+                $schema->create($this->table, function (Blueprint $table) {
+                    $table->increments('id');
 
-                $table->unique(['uuid', 'version']);
-            });
+                    $table->string('uuid', 36);
+                    $table->integer('version')->unsigned();
+                    $table->text('metadata');
+                    $table->text('payload');
+                    $table->text('type');
+                    $table->dateTime('recorded_on');
+
+                    $table->unique(['uuid', 'version']);
+                });
+            }
             $success = true;
         } catch (Exception $e) {
             $this->error("This error has occurred: " . $e->getMessage());
