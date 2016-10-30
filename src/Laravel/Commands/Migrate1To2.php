@@ -48,7 +48,6 @@ class Migrate1To2 extends Command
         $this->output->progressStart(count($events));
 
         $events->each(function ($data) use ($toTable, $serializer) {
-
             try {
                 // Full Event
                 $event = $this->deserialize(json_decode($data->payload, true));

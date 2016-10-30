@@ -206,7 +206,7 @@ class BuildProjectionCommand extends Command
         try {
             $projector = app()->make($this->argument('projector') ?: $this->ask('Which projector do you want (Namespace + Class)'));
 
-            if ( ! $projector instanceof Projection) {
+            if (! $projector instanceof Projection) {
                 throw new Exception("This is not a valid Projector, a Projector must implement the projection interface.");
             }
 
@@ -240,8 +240,7 @@ class BuildProjectionCommand extends Command
 
                 $this->output->progressFinish();
             });
-
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $this->error("Projector does not exist!");
             $this->error($e->getMessage());
         }
